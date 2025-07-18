@@ -15,7 +15,7 @@
 
     
 
-    body::before {
+    /* body::before {
       content: "";
       position: fixed;
       top: 0; left: 0;
@@ -25,15 +25,9 @@
                   radial-gradient(white 1px, transparent 1px);
       background-position: 0 0, 50px 50px;
       background-size: 100px 100px;
-      animation: stars 100s linear infinite;
-      z-index: 0;
-      opacity: 0.2;
-    }
+    } */
 
-    @keyframes stars {
-      from { transform: translateY(0); }
-      to   { transform: translateY(1000px); }
-    }
+  
 
     main {
       flex: 1;
@@ -89,7 +83,6 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      margin-bottom: 20px;
       padding: 20px;
       background: rgba(0, 0, 0, 0.7);
       text-align: center;
@@ -253,7 +246,7 @@
       text-align: center;
     }
     #result {
-      margin-top: 15px;
+      margin: 15px;
       font-size: 20px;
       color: #0ff;
     } 
@@ -365,6 +358,8 @@
 
       #result {
         font-size: 14px;
+        margin-top: 20px;
+        margin: 50px;
       }
     }
   </style>
@@ -394,9 +389,9 @@
   <div class="bet-controls">
     <div class="bet-options">
       <button class="bet-btn" data-amount="300">Min (300)</button>
-      <button class="bet-btn" data-amount="5000">Max (5000)</button>
+      <button class="bet-btn" data-amount="3000">Max (3000)</button>
       <button class="bet-btn" data-amount="600">2x (600)</button>
-      <button class="bet-btn" data-amount="15000">5x (15000)</button>
+      <button class="bet-btn" data-amount="3000">5x (3000)</button>
       <input type="number" id="customBet" placeholder="Tanga miqdori..." min="100" step="100" />
     </div>
     <div class="action-buttons">
@@ -411,77 +406,138 @@
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    const values = ["x2", "x50", "x1.4", "x1.1", "x2K", "x1K", "x2", "x10", "x3", "x50", "x2", "x500", "x5", "x3", "x92", "x2", "x25", "x1.2", "x1.5", "x1.3"];
-    const wheel = document.getElementById("wheel");
-    const dynamicPointer = document.getElementById("dynamicPointer");
-    let userCoins = 5000;
+  function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
-    values.forEach((val, i) => {
-      const span = document.createElement("span");
-      const angle = (360 / values.length) * i + (360 / values.length) / 2;
-      span.innerText = val;
-      span.style.setProperty('--angle', `${angle}deg`);
-      if (parseFloat(val.replace("x", "")) >= 1000) span.classList.add("large-text");
-      wheel.appendChild(span);
-    });
+const weightedValues = [
+  ...Array(4).fill("x1.1"),
+  ...Array(3).fill("x1.2"),
+  ...Array(3).fill("x1.3"),
+  ...Array(2).fill("x1.4"),
+  ...Array(2).fill("x1.5"),
+  ...Array(2).fill("x2"),
+  ...Array(2).fill("x3"),
+  "x5",
+  "x10",
+  "x25",
+  "x50",
+  "x92",
+  "x500",
+  "x1K",
+  "x2K"
+];
 
-    document.querySelectorAll('.bet-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.getElementById('bet').value = btn.getAttribute('data-amount');
-      });
-    });
+const values = shuffle(weightedValues);
 
-    let rotation = 0;
-    function spinWheel() {
-      const resultText = document.getElementById("result");
-      const bet = parseInt(document.getElementById("bet").value);
-      if (!bet || bet < 300 || bet > 5000) {
-        alert("Iltimos, 300 dan kam yoki 5000 dan ko'p bo'lmagan miqdor kiriting");
-        return;
+  const wheel = document.getElementById("wheel");
+  const dynamicPointer = document.getElementById("dynamicPointer");
+  let userCoins = 0;
+
+  values.forEach((val, i) => {
+    const span = document.createElement("span");
+    const angle = (360 / values.length) * i + (360 / values.length) / 2;
+    span.innerText = val;
+    span.style.setProperty('--angle', `${angle}deg`);
+    if (parseFloat(val.replace("x", "")) >= 1000) span.classList.add("large-text");
+    wheel.appendChild(span);
+  });
+
+  document.querySelectorAll('.bet-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const label = btn.textContent.trim();
+      let amount = 300; 
+      switch (true) {
+        case label.includes('Min'):
+          amount = 300;
+          break;
+        case label.includes('Max'):
+          amount = Math.min(userCoins, 3000);
+          break;
+        case label.includes('2x'):
+          amount = Math.min(300 * 2, 3000);
+          break;
+        case label.includes('5x'):
+          amount = Math.min(3000);
+          break;
+        default:
+          amount = parseInt(btn.dataset.amount) || 300;
       }
-      if (bet > userCoins) {
-        alert("Tangangiz yetarli emas!");
-        return;
-      }
-      const randomIndex = Math.floor(Math.random() * values.length);
-      const anglePerSlice = 360 / values.length;
-      const targetAngle = 360 - (randomIndex * anglePerSlice);
-      rotation += 360 * 5 + targetAngle;
-      wheel.style.transform = `rotate(${rotation}deg)`;
-      setTimeout(() => {
-        const indexFromTop = Math.floor((360 - (rotation % 360) + anglePerSlice / 2) % 360 / anglePerSlice);
-        const selectedValue = values[indexFromTop];
-        const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
-        const winAmount = Math.floor(multiplier * bet);
-        userCoins -= bet;
-        userCoins += winAmount;
-        document.getElementById("coins").textContent = `Tanga: ${userCoins}`;
-        resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
-        dynamicPointer.style.display = "block";
-        dynamicPointer.innerText = `Yutuq: ${winAmount}`;
-        dynamicPointer.style.transform = `translate(-50%, -50%)`;
-        setTimeout(() => {
-          dynamicPointer.style.display = "none";
-        }, 5000);
-      }, 4500);
-    }
+      document.getElementById('customBet').value = amount;
+    });
+  });
 
-    // Foydalanuvchi ma'lumotlari (yuklash uchun API qo'shish mumkin)
-    const userId = 123456; // Real Telegram ID bo'lishi kerak
-    fetch(`/api/user?telegram_id=${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
-        document.getElementById('level').textContent = `Level: ${data.level}`;
-        document.getElementById('xp').textContent = `XP: ${data.xp}`;
-        document.getElementById('rank').textContent = `Rank: ${data.rank}`;
-        userCoins = data.coins || 5000;
-        document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
-        document.getElementById('avatar').src = data.avatar || './img/default.jpg';
-      })
-      .catch(() => {
-        document.getElementById('name').textContent = 'Yuklanmadi';
-      });
-  </script>
+  let rotation = 0;
+  function spinWheel() {
+  const resultText = document.getElementById("result");
+  const bet = parseInt(document.getElementById("customBet").value);
+
+  if (!bet || bet < 300 || bet > 3000) {
+    resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
+    resultText.style.color = "orange";
+    return;
+  }
+
+  if (bet > userCoins) {
+    resultText.innerText = "❌ Tangalaringiz yetarli emas!";
+    resultText.style.color = "red";
+    return;
+  }
+
+  // Spinning logic
+  const randomIndex = Math.floor(Math.random() * values.length);
+  const anglePerSlice = 360 / values.length;
+  const targetAngle = 360 - (randomIndex * anglePerSlice);
+  rotation += 360 * 5 + targetAngle;
+  wheel.style.transform = `rotate(${rotation}deg)`;
+
+  setTimeout(() => {
+    const normalizedRotation = (rotation % 360 + 360) % 360;
+    const indexFromTop = Math.floor(normalizedRotation / anglePerSlice) % values.length;
+    const selectedValue = values[(values.length - indexFromTop) % values.length];
+    const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
+    const winAmount = Math.floor(multiplier * bet);
+
+    userCoins -= bet;
+    userCoins += winAmount;
+
+    document.getElementById("coins").textContent = `Tanga: ${userCoins}`;
+    resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
+    resultText.style.color = "#00ff00";
+
+    dynamicPointer.style.display = "block";
+    dynamicPointer.innerText = `Yutuq: ${winAmount}`;
+    dynamicPointer.style.transform = `translate(-50%, -50%)`;
+
+    setTimeout(() => {
+      dynamicPointer.style.display = "none";
+    }, 5000);
+  }, 4500);
+
+}
+
+
+  // 👤 Telegram user ma’lumotlarini olish
+  const userId = tg?.initDataUnsafe?.user?.id || "demo";
+  fetch(`/api/user?telegram_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
+      document.getElementById('level').textContent = `Level: ${data.level}`;
+      document.getElementById('xp').textContent = `XP: ${data.xp}`;
+      document.getElementById('rank').textContent = `Rank: ${data.rank}`;
+      userCoins = data.coins || 5000;
+      document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
+      document.getElementById('avatar').src = data.avatar || './img/default.jpg';
+    })
+    .catch(() => {
+      document.getElementById('name').textContent = 'Yuklanmadi';
+    });
+</script>
+
 </body>
 </html>

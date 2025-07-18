@@ -241,7 +241,7 @@
     // Foydalanuvchi ma'lumotlarini olish
     async function fetchUserData() {
       try {
-        const res = await fetch(`http://localhost:3000/api/user?telegram_id=${userId}`);
+        const res = await fetch(`/api/user?telegram_id=${userId}`);
         if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
         const data = await res.json();
         document.getElementById('name').textContent = data.name || 'Nomaʼlum';
@@ -309,7 +309,7 @@
       selectedBet = val;
 
       try {
-        const res = await fetch('http://localhost:3000/api/update-balance', {
+        const res = await fetch('/api/update-balance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ telegram_id: userId, amount: -selectedBet })
@@ -379,7 +379,7 @@
       const bonus = Math.round(selectedBet * multiplier);
 
       try {
-        const res = await fetch('http://localhost:3000/api/update-balance', {
+        const res = await fetch('/api/update-balance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ telegram_id: userId, amount: bonus })

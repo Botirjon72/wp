@@ -224,19 +224,44 @@ footer {
   </footer>
 
   <script>
+     const tg = window.Telegram.WebApp;
+      tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id;
     function loadUser() {
-      document.getElementById('name').textContent = 'Ism Familiya';
-      document.getElementById('level').textContent = 'Level: 2';
-      document.getElementById('xp').textContent = 'XP: 150';
-      document.getElementById('rank').textContent = 'Rank: Silver';
-      document.getElementById('coins').textContent = 'Tanga: 550';
+          if (!userId) {
+        document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+        document.getElementById('avatar').src = './img/default.jpg';
+      } else {
+        fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+          .then(res => {
+            if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+            return res.json();
+          })
+          .then(data => {
+            document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+            document.getElementById('level').textContent = `Level: ${data.level}`;
+            document.getElementById('xp').textContent = `XP: ${data.xp}`;
+            document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+            document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+            document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById('name').textContent = 'Xatolik!';
+          });
     }
+  }
 
     const tasks = [
       { id: 1, name: 'Botni ishga tushiring', desc: 'Telegram botni ishga tushiring.', reward: 5, done: false },
-      { id: 2, name: 'Profilni to‘ldiring', desc: 'Profilingizni to‘ldiring.', reward: 10, done: true },
+      { id: 2, name: 'Profilni to‘ldiring', desc: 'Profilingizni to‘ldiring.', reward: 10, done: false },
       { id: 3, name: 'Kunlik kirish', desc: 'Bugun tizimga kiring.', reward: 3, done: false },
+      { id: 4, name: 'O‘yinni aylantiring', desc: 'Spinni kamida bir marta aylantiring.', reward: 7, done: false },
+      { id: 5, name: 'Do‘stingizni taklif qiling', desc: '1 ta do‘stingizni taklif qiling va u botga kirsin.', reward: 15, done: false },
+      { id: 6, name: 'Topshiriqni bajarib ko‘ring', desc: 'Har qanday 1 ta topshiriqni muvaffaqiyatli bajaring.', reward: 4, done: false },
     ];
+
 
     function loadTasks() {
       const list = document.getElementById('taskList');
