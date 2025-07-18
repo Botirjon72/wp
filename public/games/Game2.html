@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pochoy Spin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+
+    .user-info {
+      display: flex;
+      margin: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      align-items: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+
+    .user-info h3 {
+      color: #0ff;
+      font-size: 24px;
+    }
+
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+   
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .menu-item {
+        width: 100px;
+        height: 100px;
+        font-size: 12px;
+      }
+
+      .menu-item img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .user-info h3 {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      
+      .menu-item {
+        width: 80px;
+        height: 100px;
+        font-size: 15px;
+      }
+
+      .menu-item img {
+        width: 40px;
+        height: 35px;
+      }
+
+      .user-info h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #000 60%, #111);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+
+    .wheel-container {
+      position: relative;
+      width: 450px;
+      height: 450px;  
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 10px solid gold;
+      background: conic-gradient(
+        #4b0082 0deg 18deg, #330066 18deg 36deg,
+        #4b0082 36deg 54deg, #330066 54deg 72deg,
+        #4b0082 72deg 90deg, #330066 90deg 108deg,
+        #4b0082 108deg 126deg, #330066 126deg 144deg,
+        #4b0082 144deg 162deg, #330066 162deg 180deg,
+        #4b0082 180deg 198deg, #330066 198deg 216deg,
+        #4b0082 216deg 234deg, #330066 234deg 252deg,
+        #4b0082 252deg 270deg, #330066 270deg 288deg,
+        #4b0082 288deg 306deg, #330066 306deg 324deg,
+        #4b0082 324deg 342deg, #330066 342deg 360deg
+      );
+      position: relative;
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+      box-shadow: 0 0 20px gold;
+    }
+
+    .wheel span {
+      position: absolute;
+      left: 47%;
+      top: 48%;
+      transform-origin: 0 0;
+      font-weight: bold;
+      font-size: 16px;
+      color: #fff;
+      text-shadow: 0 0 5px #000;
+      letter-spacing: 0.1px;
+      pointer-events: none;
+      font-size: 10px;
+      transform: rotate(var(--angle)) translate(170px) rotate(calc(-1 * var(--angle)));
+    
+    }
+
+    .wheel span.large-text {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .pointer {
+      width: 10px;
+      height: 50px;
+      background-color: #f9d974;
+      position: absolute;
+      top: 0;
+      left: 48%;
+      z-index: 2;
+      border-radius: 0 0 5px 5px;
+    }
+
+    .dynamic-pointer {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 16px;
+      display: none;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .bet-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    .bet-btn {
+      padding: 8px 16px;
+      background: #111;
+      color: #0ff;
+      border: 1px solid #0ff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .bet-btn:hover {
+      background: #0ff;
+      color: #000;
+    }
+    #customBet {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #0ff;
+      background: #000;
+      color: #0ff;
+      width: 140px;
+      text-align: center;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 20px;
+      color: #0ff;
+    } 
+    
+    #startButton{
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 6px;
+      background: #0ff;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 8px #0ff;
+      transition: background 0.3s;
+    }
+
+    #startButton:hover{
+      background: #00e6e6;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+
+    @media (max-width: 500px) {
+      .wheel-container {
+        width: 90vw;
+        height: 90vw;
+      }
+
+      .wheel span {
+        font-size: 18px;
+        transform: rotate(var(--angle)) translate(165px) rotate(calc(-1 * var(--angle)));
+      }
+
+      .wheel span.large-text {
+        font-size: 14px;
+      }
+
+      .pointer {
+        width: 10px;
+        height: 20px;
+      }
+
+      .dynamic-pointer {
+        font-size: 14px;
+      }
+
+
+
+      #result {
+        font-size: 16px;
+      }
+      .bet-btn, #customBet {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+    
+    }
+
+    @media (max-width: 440px) {
+      .wheel-container {
+        width: 300px;
+        height: 300px;
+      }
+
+      .wheel span {
+        font-size: 10px;
+        transform: rotate(var(--angle)) translate(100px) rotate(calc(-1 * var(--angle)));
+      }
+
+      .wheel span.large-text {
+        font-size: 11px;
+      }
+
+      .dynamic-pointer {
+        font-size: 12px;
+      }
+
+      #result {
+        font-size: 14px;
+      }
+    }
+    @media (max-width: 380px) {
+      .wheel-container {
+        width: 300px;
+        height: 300px;
+      }
+
+      .wheel span {
+        font-size: 10px;
+        transform: rotate(var(--angle)) translate(95px) rotate(calc(-1 * var(--angle)));
+      }
+
+      .wheel span.large-text {
+        font-size: 11px;
+      }
+
+      .dynamic-pointer {
+        font-size: 12px;
+      }
+
+      #result {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p>
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <div class="wheel-container">
+    <div class="pointer"></div>
+    <div class="dynamic-pointer" id="dynamicPointer"></div>
+    <div class="wheel" id="wheel"></div>
+  </div>
+
+  <div class="bet-controls">
+    <div class="bet-options">
+      <button class="bet-btn" data-amount="300">Min (300)</button>
+      <button class="bet-btn" data-amount="5000">Max (5000)</button>
+      <button class="bet-btn" data-amount="600">2x (600)</button>
+      <button class="bet-btn" data-amount="15000">5x (15000)</button>
+      <input type="number" id="customBet" placeholder="Tanga miqdori..." min="100" step="100" />
+    </div>
+    <div class="action-buttons">
+      <button id="startButton" onclick="spinWheel()">🎰 Garov Tikish</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <footer class="footer">
+    REKLAMA
+  </footer>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const values = ["x2", "x50", "x1.4", "x1.1", "x2K", "x1K", "x2", "x10", "x3", "x50", "x2", "x500", "x5", "x3", "x92", "x2", "x25", "x1.2", "x1.5", "x1.3"];
+    const wheel = document.getElementById("wheel");
+    const dynamicPointer = document.getElementById("dynamicPointer");
+    let userCoins = 5000;
+
+    values.forEach((val, i) => {
+      const span = document.createElement("span");
+      const angle = (360 / values.length) * i + (360 / values.length) / 2;
+      span.innerText = val;
+      span.style.setProperty('--angle', `${angle}deg`);
+      if (parseFloat(val.replace("x", "")) >= 1000) span.classList.add("large-text");
+      wheel.appendChild(span);
+    });
+
+    document.querySelectorAll('.bet-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('bet').value = btn.getAttribute('data-amount');
+      });
+    });
+
+    let rotation = 0;
+    function spinWheel() {
+      const resultText = document.getElementById("result");
+      const bet = parseInt(document.getElementById("bet").value);
+      if (!bet || bet < 300 || bet > 5000) {
+        alert("Iltimos, 300 dan kam yoki 5000 dan ko'p bo'lmagan miqdor kiriting");
+        return;
+      }
+      if (bet > userCoins) {
+        alert("Tangangiz yetarli emas!");
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * values.length);
+      const anglePerSlice = 360 / values.length;
+      const targetAngle = 360 - (randomIndex * anglePerSlice);
+      rotation += 360 * 5 + targetAngle;
+      wheel.style.transform = `rotate(${rotation}deg)`;
+      setTimeout(() => {
+        const indexFromTop = Math.floor((360 - (rotation % 360) + anglePerSlice / 2) % 360 / anglePerSlice);
+        const selectedValue = values[indexFromTop];
+        const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
+        const winAmount = Math.floor(multiplier * bet);
+        userCoins -= bet;
+        userCoins += winAmount;
+        document.getElementById("coins").textContent = `Tanga: ${userCoins}`;
+        resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
+        dynamicPointer.style.display = "block";
+        dynamicPointer.innerText = `Yutuq: ${winAmount}`;
+        dynamicPointer.style.transform = `translate(-50%, -50%)`;
+        setTimeout(() => {
+          dynamicPointer.style.display = "none";
+        }, 5000);
+      }, 4500);
+    }
+
+    // Foydalanuvchi ma'lumotlari (yuklash uchun API qo'shish mumkin)
+    const userId = 123456; // Real Telegram ID bo'lishi kerak
+    fetch(`/api/user?telegram_id=${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
+        document.getElementById('level').textContent = `Level: ${data.level}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank}`;
+        userCoins = data.coins || 5000;
+        document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
+        document.getElementById('avatar').src = data.avatar || './img/default.jpg';
+      })
+      .catch(() => {
+        document.getElementById('name').textContent = 'Yuklanmadi';
+      });
+  </script>
+</body>
+</html>

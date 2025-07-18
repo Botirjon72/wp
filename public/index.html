@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cyberpunk Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+   body {
+    min-height: 100vh;
+    font-family: 'Rajdhani', sans-serif;
+    background:  url('./bg2.jpg') no-repeat center center fixed;
+    background-size: cover;         /* Bu joy asosiy yechim */
+    background-position: center;   /* Markazda joylashadi */
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dashboard {
+      width: 100%;
+      max-width: 580px;
+      padding: 30px;
+      background: transparent; /* 🔥 FONNI TO‘LIQ OLIB TASHLAYDI */
+      border: 1px solid #0ff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      backdrop-filter: none; /* ❌ Orqa fonni xiralashtirmaslik */
+      min-height: 500px;
+    }
+
+
+    .user-info {
+      display: flex;
+      margin: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      align-items: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+
+    .user-info h3 {
+      color: #0ff;
+      font-size: 24px;
+    }
+
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+   .menu-grid {
+  margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+
+.menu-item {
+  margin-top: 20px;
+  width: 160px;
+  height: 150px;
+  border-radius: 16px;
+  border: 2px solid #00ffff; /* Neon chiziq */
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #00ffff66, 0 0 20px #00ffff33; /* Neon effekt */
+  color: #fff;
+}
+
+.menu-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff88;
+}
+
+
+    .menu-item img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      margin-bottom: 5px;
+    }
+
+    .menu-item.red {
+      color: #ff0055;
+      border-color: #ff0055;
+      text-shadow: 0 0 5px #ff0055, 0 0 10px #ff0055;
+      box-shadow:
+        0 0 15px #ff0055,
+        0 0 30px #ff0055,
+        inset 0 0 20px rgba(255, 0, 85, 0.4);
+    }
+
+    .menu-item.blue {
+      color: #00ccff;
+      border-color: #00ccff;
+      text-shadow: 0 0 5px #00ccff, 0 0 10px #00ccff;
+      box-shadow:
+        0 0 15px #00ccff,
+        0 0 30px #00ccff,
+        inset 0 0 20px rgba(0, 204, 255, 0.4);
+    }
+
+    .menu-item:hover {
+      transform: scale(1.08);
+      cursor: pointer;
+    }
+
+    .menu-item.disabled {
+      pointer-events: none;
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .menu-item {
+        width: 100px;
+        height: 100px;
+        font-size: 12px;
+      }
+
+      .menu-item img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .user-info h3 {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: 15px;
+      }
+
+      .menu-item {
+        width: 80px;
+        height: 100px;
+        font-size: 15px;
+      }
+
+      .menu-item img {
+        width: 40px;
+        height: 35px;
+      }
+
+      .user-info h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- USER INFO (Will be filled from JS/API) -->
+   <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p> <!-- Qo‘shildi -->
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <main>
+    <div class="dashboard">
+      <div class="menu-grid">
+        <a href="Game.html" class="menu-item blue"><img src="./icons/game.png" alt="">Game</a>
+        <a href="Bonus.html" class="menu-item red"><img src="./icons/bonus.jpg" alt="">Bonus</a>
+        <a href="Tast.html" class="menu-item blue"><img src="./icons/Tack.jpg" alt="">TASK</a>
+        <a href="sozlama.html" class="menu-item blue"><img src="./icons/sozlamalar.jpg" alt="">Settings</a>
+        <a href="#" class="menu-item red disabled"><img src="./icons/Rank.jpg" alt="">NFT</a>
+        <a href="#" class="menu-item red disabled"><img src="./icons/klan.jpg" alt="">Klan</a>
+        <a href="#" class="menu-item blue disabled"><img src="./icons/premium.jpg" alt="">Premium</a>
+        <a href="#" class="menu-item blue disabled"><img src="./icons/Token.jpg" alt="">COMING</a>
+        <a href="#" class="menu-item blue disabled"><img src="./icons/statistika.jpg" alt="">Statistika</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    REKLAMA
+  </footer>
+
+  <!-- FETCH USER DATA FROM API -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+ <script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const userId = tg.initDataUnsafe?.user?.id; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
+
+  if (!userId) {
+    document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+    document.getElementById('avatar').src = './img/default.jpg';
+  } else {
+    fetch(`http://localhost:3000/api/user?telegram_id=123456`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+      .then(res => {
+        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+        document.getElementById('level').textContent = `Level: ${data.level}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+        document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('name').textContent = 'Xatolik!';
+      });
+  }
+</script>
+
+
+</body>
+</html>

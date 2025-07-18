@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin G‘ildirak</title>
+    <style>
+        body {
+        background: #2c003e;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        color: white;
+        }
+
+        .container {
+        position: relative;
+        }
+
+        .wheel {
+        border: 10px solid gold;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        }
+
+        .pointer {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 40px;
+        color: gold;
+        }
+
+        button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: gold;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+  <div class="container">
+    <div class="wheel" id="wheel">
+      <canvas id="canvas" width="500" height="500"></canvas>
+    </div>
+    <div class="pointer">&#9650;</div>
+    <button id="spinBtn">Aylantirish</button>
+  </div>
+
+  <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const spinBtn = document.getElementById("spinBtn");
+
+        const segments = [
+        "YUTDI", "YO‘QOTDI", "QAYTA URINISH", "YANA BIR BOR",
+        "1 PUL", "5 PUL", "1000 SO'M", "BO‘SH", "SURPRIZ", "50%",
+        "QUR'A", "KULGU", "HADYA", "BARAKA", "0", "JACKPOT"
+        ];
+
+        const colors = ["#3e065f", "#700b97", "#8e05c2", "#d59bf6", "#00c2cb", "#0081a7", "#f4d06f", "#ff8811"];
+
+        const radius = 250;
+        let angle = 0;
+        let isSpinning = false;
+
+        function drawWheel() {
+        const anglePerSegment = (2 * Math.PI) / segments.length;
+
+        for (let i = 0; i < segments.length; i++) {
+            const startAngle = anglePerSegment * i;
+            const endAngle = startAngle + anglePerSegment;
+            
+            ctx.beginPath();
+            ctx.moveTo(radius, radius);
+            ctx.arc(radius, radius, radius, startAngle, endAngle);
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.fill();
+            ctx.save();
+
+            ctx.translate(radius, radius);
+            ctx.rotate(startAngle + anglePerSegment / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "white";
+            ctx.font = "16px sans-serif";
+            ctx.fillText(segments[i], radius - 10, 5);
+            ctx.restore();
+        }
+        }
+
+        drawWheel();
+
+        spinBtn.onclick = () => {
+        if (isSpinning) return;
+        isSpinning = true;
+        let spinAngle = Math.random() * 360 + 1080;
+        let currentAngle = 0;
+        const spinInterval = setInterval(() => {
+            currentAngle += 10;
+            if (currentAngle >= spinAngle) {
+            clearInterval(spinInterval);
+            isSpinning = false;
+            }
+            angle = (currentAngle * Math.PI) / 180;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(radius, radius);
+            ctx.rotate(angle);
+            ctx.translate(-radius, -radius);
+            drawWheel();
+            ctx.restore();
+        }, 10);
+        };
+
+
+  </script>
+</body>
+</html>

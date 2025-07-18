@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sozlamalar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: url('./bg2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .section {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #0ff;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px #0ff;
+    }
+
+    .section h3 {
+      color: #0ff;
+      margin-bottom: 10px;
+    }
+
+    .section p {
+      margin: 6px 0;
+    }
+
+    .highlight {
+      color: #0f0;
+      font-weight: bold;
+    }
+
+    a {
+      color: #0ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #0f0;
+      text-decoration: underline;
+    }
+
+    .change-button {
+      background: #0ff;
+      color: #000;
+      border: none;
+      padding: 5px 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .change-button:hover {
+      background: #0f0;
+    }
+
+    .faq-item {
+  border-bottom: 1px solid #0ff;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.faq-item p {
+  margin: 0;
+  color: #0ff;
+}
+
+.faq-answer {
+  display: none;
+  padding-top: 5px;
+  color: #fff;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.faq-item.active .faq-answer {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+  </style>
+</head>
+<body>
+
+ <div class="section">
+  <h3>✅ 1) PROFIL</h3>
+
+  <!-- Profil rasmi -->
+  <div style="text-align:center; margin-bottom: 15px;">
+    <img id="profilePic" src="./img/avatar1.jpg" alt="Profil rasmi" style="width:120px; height:120px; border-radius:50%; border: 3px solid #0ff;">
+    <br>
+    <label for="avatarSelect" style="display:block; margin-top:10px; margin-bottom:5px;">📌 Rasmni tanlang:</label>
+    <select id="avatarSelect" onchange="changeProfileFromSelect()" style="padding:5px; border-radius:5px;">
+      <option value="./img/img.jpg" selected>Avatar 1</option>
+      <option value="./bg2.jpg">Avatar 2</option>
+      <option value="./img/avatar3.jpg">Avatar 3</option>
+      <option value="./img/avatar4.jpg">Avatar 4</option>
+    </select>
+  </div>
+
+  <!-- User ismini o‘zgartirish -->
+  <p><b>📌 User ismi:</b></p>
+  <input type="text" id="usernameInput" value="PoxoyZ" style="padding:5px; border-radius:5px; border:none; width:60%;">
+  <button class="change-button" onclick="changeUsername()">Saqlash</button>
+
+  <p style="margin-top:10px;">📌 Siz shu vaqtgacha: <span class="highlight">18,000 tanga</span> yig‘gansiz!</p>
+</div>
+
+
+
+  <div class="section">
+    <h3>✅ 2) BOTDAN RO‘YXATDAN O‘TGAN SANA</h3>
+    <p>📆 Siz <span class="highlight">2026-yil 2-avgust</span> kuni ro‘yxatdan o‘tgansiz!</p>
+  </div>
+
+  <div class="section">
+    <h3>✅ 3) ALOQA</h3>
+    <p>✉️ Gmail: <a href="mailto:poxoyzm@gmail.com">poxoyzm@gmail.com</a></p>
+    <p>📸 Instagram: <a href="https://instagram.com/poxoyzm" target="_blank">@poxoyzm</a></p>
+    <p>📣 Telegram: <a href="https://t.me/poxoyzm" target="_blank">@poxoyzm</a></p>
+    <p>🎵 TikTok: <a href="https://tiktok.com/@poxoyzm" target="_blank">@poxoyzm</a></p>
+    <p>🌍 Barcha ijtimoiy tarmoqlarda: <span class="highlight">@poxoyzm</span></p>
+  </div>
+
+ <div class="section">
+  <h3>✅ 4) FAQ — Tez-tez so‘raladigan savollar</h3>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ Poxoyzm nima?</b></p>
+    <div class="faq-answer">
+      💀 Poxoyzm — bu noodatiy, yangicha va cheklanmagan loyiha. Bu yerda token, NFT, games, memlar, emotsiya va real pul — barchasi bir joyda!
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ Qanday tanga to‘planadi?</b></p>
+    <div class="faq-answer">
+      💰 Tanga olishning yo‘llari:
+      <ul>
+        <li>Referal chaqirish 🤝</li>
+        <li>Har kunlik bonus 🎁</li>
+        <li>Rank oshirish 🏅</li>
+        <li>Games o‘ynash 🎮</li>
+        <li>Premium sotib olish 👑</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ Token nima?</b></p>
+    <div class="faq-answer">
+      💎 Poxoyzm token — bu loyiha ichidagi asosiy qiymat. Uni keyinchalik birjada sotish, NFT olish va maxsus imkoniyatlarga ega bo‘lish uchun ishlatiladi.
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ Token qachon chiqadi?</b></p>
+    <div class="faq-answer">
+      ⌛ Token tez orada chiqadi! 5 ta bosqich bo‘yicha ochiladi va eng faol foydalanuvchilar birinchi bo‘lib oladi.
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ NFT nima?</b></p>
+    <div class="faq-answer">
+      🗿 NFT — bu Poxoyzm brendi ramzi tushirilgan noyob raqamli kolleksiya.
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ NFT nima foyda beradi?</b></p>
+    <div class="faq-answer">
+      🚀 NFT sizga:
+      <ul>
+        <li>Maxsus perks 🏆</li>
+        <li>Kelajakda 10x foyda 💰</li>
+        <li>Chegaralangan collector status 🎖️</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="faq-item" onclick="toggleAnswer(this)">
+    <p><b>❓ NFT’ni kelajakda qanday ishlatsa bo‘ladi?</b></p>
+    <div class="faq-answer">
+      🌍 NFT Poxoyzm ichida trading, resale, limited perks va boshqalar uchun ishlatiladi. NFT egalari kelajakda token yoki maxsus bonuslarga birinchi navbatda ega bo‘ladilar.
+    </div>
+  </div>
+</div>
+
+
+<footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.85);
+  color: #0ff;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  border-top: 1px solid #0ff;
+  z-index: 999;
+">
+  📢 REKLAMA BU YERDA
+</footer>
+
+<script>
+  // Profil rasmi tanlash funksiyasi
+  function changeProfileFromSelect() {
+    const selectedValue = document.getElementById('avatarSelect').value;
+    document.getElementById('profilePic').src = selectedValue;
+    localStorage.setItem('selectedAvatar', selectedValue); // Saqlash
+  }
+
+  // Ismni o‘zgartirish funksiyasi
+  function changeUsername() {
+    const input = document.getElementById('usernameInput');
+    const newName = input.value.trim();
+    if (newName.length > 0) {
+      localStorage.setItem('username', newName); // Saqlash
+      alert("✅ Ismingiz o‘zgartirildi: " + newName);
+    } else {
+      alert("❌ Ism bo‘sh bo‘lmasligi kerak!");
+    }
+  }
+
+  // Sahifa yuklanganda saqlangan ma'lumotlarni yuklash
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedAvatar = localStorage.getItem('selectedAvatar');
+    const savedName = localStorage.getItem('username');
+    if (savedAvatar) {
+      document.getElementById('profilePic').src = savedAvatar;
+      document.getElementById('avatarSelect').value = savedAvatar;
+    }
+    if (savedName) {
+      document.getElementById('usernameInput').value = savedName;
+    }
+  });
+
+
+  function toggleAnswer(el) {
+    el.classList.toggle("active");
+  }
+
+
+</script>
+
+
+
+
+</body>
+</html>

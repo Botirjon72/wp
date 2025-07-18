@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Poxoyfusk</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 32px;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+      margin-bottom: 20px;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+    .crystal {
+      background: linear-gradient(135deg, #0ff, #00f);
+      border: 2px solid #0ff;
+      border-radius: 10px;
+      height: 60px;
+      width: 60px;
+      box-shadow: 0 0 10px #0ff, inset 0 0 5px #00f;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .crystal:hover {
+      transform: scale(1.05);
+    }
+    .crystal.revealed {
+      background: #002a33;
+      box-shadow: inset 0 0 5px #0ff;
+      color: #0ff;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .crystal.mine {
+      background: #ff0033 !important;
+      color: #fff;
+      box-shadow: 0 0 10px red;
+    }
+    .crystal.yutuq {
+      background: #003300 !important;
+      box-shadow: 0 0 8px lime;
+    }
+    .bet-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .bet-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .bet-btn {
+      padding: 8px 16px;
+      background: #111;
+      color: #0ff;
+      border: 1px solid #0ff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .bet-btn:hover {
+      background: #0ff;
+      color: #000;
+    }
+    #customBet {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #0ff;
+      background: #000;
+      color: #0ff;
+      width: 140px;
+      text-align: center;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    #startButton,
+    #cashoutButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #0ff;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 8px #0ff;
+      transition: background 0.3s;
+    }
+    #startButton:hover,
+    #cashoutButton:hover {
+      background: #00e6e6;
+    }
+    .user-info {
+      display: flex;
+      margin: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      align-items: center;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+    .user-info h3 {
+      color: #0ff;
+      font-size: 24px;
+    }
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+    #currentWin {
+      color: #0ff;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 500px) {
+      .grid-container {
+        grid-template-columns: repeat(5, 48px);
+      }
+      .crystal {
+        width: 48px;
+        height: 48px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      .user-info h3 {
+        font-size: 20px;
+      }
+      .bet-btn, #customBet {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p>
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <h1>Poxoyfusk Kristallar</h1>
+  <p id="multiplier">Ko‘paytiruvchi: 1.0x</p>
+  <div class="grid-container" id="crystalGrid"></div>
+  <p id="currentWin">Joriy yutuq: 0 tanga</p>
+  <div class="bet-controls">
+    <div class="bet-options">
+      <button class="bet-btn" data-amount="300">Min (300)</button>
+      <button class="bet-btn" data-amount="5000">Max (5000)</button>
+      <button class="bet-btn" data-amount="600">2x (600)</button>
+      <button class="bet-btn" data-amount="15000">5x (15000)</button>
+      <input type="number" id="customBet" placeholder="Tanga miqdori..." min="100" step="100" />
+    </div>
+    <div class="action-buttons">
+      <button id="startButton">🎰 Garov Tikish</button>
+      <button id="cashoutButton" disabled>💰 Garovni Olish</button>
+    </div>
+  </div>
+
+  <footer class="footer">REKLAMA</footer>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id; // Eslatma: initDataUnsafe xavfsiz emas, serverda autentifikatsiya qiling!
+    let userBalance = 0;
+
+    // Foydalanuvchi ma'lumotlarini olish
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`http://localhost:3000/api/user?telegram_id=${userId}`);
+        if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+        const data = await res.json();
+        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+        document.getElementById('level').textContent = `Level: ${data.level || 0}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'} | : ${data.score || 0}`;
+        document.getElementById('coins').textContent = `Tanga: ${data.coins|| 0}`;
+        userBalance = data.score || 0;
+      } catch (err) {
+        console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
+        document.getElementById('name').textContent = 'Xatolik yuz berdi';
+        document.getElementById('avatar').src = './img/default.jpg';
+      }
+    }
+
+    const grid = document.getElementById('crystalGrid');
+    const startButton = document.getElementById('startButton');
+    const cashoutButton = document.getElementById('cashoutButton');
+    const customBetInput = document.getElementById('customBet');
+    const betButtons = document.querySelectorAll('.bet-btn');
+    const multiplierDisplay = document.getElementById('multiplier');
+    const currentWinDisplay = document.getElementById('currentWin');
+
+    const total = 25;
+    const minesCount = 50; // 80% yutqazish ehtimoli
+    let isGameActive = false;
+    let revealedCount = 0;
+    let selectedBet = 0;
+    let mineIndexes = new Set();
+
+    function renderGrid(disabled = true, mines = new Set()) {
+      grid.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const div = document.createElement('div');
+        div.classList.add('crystal');
+        div.dataset.index = i;
+        div.dataset.mine = mines.has(i) ? 'true' : 'false';
+        if (disabled) div.style.pointerEvents = 'none';
+        grid.appendChild(div);
+      }
+    }
+
+    function calculateMultiplier(revealed) {
+      return (1 + revealed * 0.2).toFixed(2);
+    }
+
+    function updateCurrentWin() {
+      const multiplier = parseFloat(calculateMultiplier(revealedCount));
+      const currentWin = Math.round(selectedBet * multiplier);
+      currentWinDisplay.textContent = `Joriy yutuq: ${currentWin} tanga`;
+    }
+
+    async function startGame() {
+      const val = parseInt(customBetInput.value);
+      if (isNaN(val) || val < 300) {
+        alert('Iltimos, 300 tangadan kam bo‘lmagan garov miqdorini kiriting!');
+        return;
+      }
+
+      if (val > userBalance) {
+        alert('Mablag‘ yetmaydi!');
+        return;
+      }
+
+      selectedBet = val;
+
+      try {
+        const res = await fetch('http://localhost:3000/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount: -selectedBet })
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
+        }
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') {
+          throw new Error('Serverdan noto‘g‘ri javob keldi');
+        }
+        userBalance = data.newScore;
+        document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
+      } catch (err) {
+        console.error('StartGame xatosi:', err);
+        alert(`Garov tikishda xatolik: ${err.message}`);
+        return;
+      }
+
+      mineIndexes.clear();
+      while (mineIndexes.size < minesCount) {
+        mineIndexes.add(Math.floor(Math.random() * total));
+      }
+
+      isGameActive = true;
+      revealedCount = 0;
+      cashoutButton.disabled = false;
+      renderGrid(false, mineIndexes);
+      updateCurrentWin();
+
+      const crystals = document.querySelectorAll('.crystal');
+      crystals.forEach(div => {
+        div.addEventListener('click', () => {
+          if (!isGameActive || div.classList.contains('revealed')) return;
+
+          div.classList.add('revealed');
+          if (div.dataset.mine === 'true') {
+            div.classList.add('mine');
+            div.textContent = '💣';
+            isGameActive = false;
+            cashoutButton.disabled = true;
+            setTimeout(() => {
+              alert('💥 Siz mina bosdingiz. O\'yin tugadi.');
+              resetGame();
+            }, 300);
+          } else {
+            div.classList.add('yutuq');
+            div.textContent = '🪙';
+            revealedCount++;
+            const currentMultiplier = calculateMultiplier(revealedCount);
+            multiplierDisplay.textContent = `Ko‘paytiruvchi: ${currentMultiplier}x`;
+            updateCurrentWin();
+          }
+        });
+      });
+    }
+
+    async function garovniOlish() {
+      if (!isGameActive) return;
+
+      isGameActive = false;
+      cashoutButton.disabled = true;
+
+      const multiplier = parseFloat(calculateMultiplier(revealedCount));
+      const bonus = Math.round(selectedBet * multiplier);
+
+      try {
+        const res = await fetch('http://localhost:3000/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount: bonus })
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
+        }
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') {
+          throw new Error('Serverdan noto‘g‘ri javob keldi');
+        }
+        userBalance = data.newScore;
+        document.getElementById('coins').textContent = `Tanga: ${data.newScore}`;
+        alert(`🎉 Siz ${revealedCount} ta kristal ochdingiz. Ko‘paytiruvchi: ${multiplier}x. Mukofot: ${bonus} tanga`);
+      } catch (err) {
+        console.error('GarovniOlish xatosi:', err);
+        alert(`Yutuq hisobga qo‘shilmadi: ${err.message}`);
+      } finally {
+        resetGame();
+      }
+    }
+
+    function resetGame() {
+      renderGrid(true);
+      isGameActive = false;
+      cashoutButton.disabled = true;
+      selectedBet = 0;
+      revealedCount = 0;
+      multiplierDisplay.textContent = 'Ko‘paytiruvchi: 1.0x';
+      currentWinDisplay.textContent = 'Joriy yutuq: 0 tanga';
+    }
+
+    betButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const amount = parseInt(btn.dataset.amount);
+        if (!isNaN(amount) && amount >= 100) {
+          selectedBet = amount;
+          customBetInput.value = amount;
+        }
+      });
+    });
+
+    customBetInput.addEventListener('input', () => {
+      const val = parseInt(customBetInput.value);
+      if (!isNaN(val) && val >= 100) {
+        selectedBet = val;
+      } else {
+        customBetInput.value = '';
+        selectedBet = 0;
+      }
+    });
+
+    startButton.addEventListener('click', startGame);
+    cashoutButton.addEventListener('click', garovniOlish);
+    window.onload = () => {
+      fetchUserData();
+      renderGrid(true);
+    };
+  </script>
+</body>
+</html>

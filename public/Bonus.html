@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Domino Bonus</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+     body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background:  url('./bg2.jpg') no-repeat center center fixed;
+      background-size: cover;         /* Bu joy asosiy yechim */
+      background-position: center;   /* Markazda joylashadi */
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      color : #fff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .user-info {
+      display: flex;
+      margin: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+
+    .user-info h3 {
+      color: #0ff;
+      font-size: 24px;
+    }
+
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .domino-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 100%;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      z-index: 2;
+    }
+
+    .domino {
+      width: 70px;
+      height: 70px;
+      background: #111;
+      border: 2px solid #0ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .domino img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .bonus-title {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #0ff;
+      z-index: 2;
+    }
+
+    .domino.available:hover {
+      background-color: #0ff;
+      cursor: pointer;
+    }
+
+    .domino.claimed {
+      background-color: rgba(165, 216, 165, 0.69);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .domino.locked {
+      background-color: #333;
+      color: #888;
+      pointer-events: none;
+    }
+
+    .domino.missed {
+      background-color: #900;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .user-info h3 {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .user-info h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Foydalanuvchi ma’lumotlari -->
+  <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p>
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <div class="bonus-title">Daily Bonus</div>
+
+  <div class="domino-container" id="bonusArea">
+    <!-- JavaScript orqali to‘ldiriladi -->
+  </div>
+
+  <footer class="footer">
+    REKLAMA
+  </footer>
+
+  <!-- Telegram WebApp JS -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id; // keyinchalik: tg.initDataUnsafe?.user?.id
+
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+    } else {
+      fetch(`http://localhost:3000/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+        });
+    }
+  </script>
+
+  <!-- Bonus logikasi -->
+  <script>
+    const bonusContainer = document.getElementById('bonusArea');
+    const totalDays = 24;
+    const bonusKey = "domino_bonus_state";
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+
+    let bonusState = JSON.parse(localStorage.getItem(bonusKey)) || {
+      claimed: [],
+      startTime: Date.now()
+    };
+
+    const now = Date.now();
+    const diff = now - bonusState.startTime;
+    const openIndex = Math.min(Math.floor(diff / ONE_DAY), totalDays - 1);
+
+    function renderDominos() {
+      bonusContainer.innerHTML = "";
+
+      for (let i = 0; i < totalDays; i++) {
+        const dom = document.createElement('div');
+        dom.classList.add('domino');
+
+        if (bonusState.claimed.includes(i)) {
+          dom.classList.add('claimed');
+          dom.textContent = '✔️';
+        } else if (i === openIndex) {
+          dom.classList.add('available');
+          const coin = document.createElement('img');
+          coin.src = './img/coin.png'; // Tangangiz uchun rasm
+          coin.alt = 'coin';
+          dom.appendChild(coin);
+
+          dom.addEventListener('click', () => claimBonus(i));
+        } else if (i < openIndex) {
+          dom.classList.add('missed');
+          dom.textContent = '❌';
+        } else {
+          dom.classList.add('locked');
+          dom.textContent = '🔒';
+        }
+
+        bonusContainer.appendChild(dom);
+      }
+    }
+
+    function claimBonus(index) {
+      if (bonusState.claimed.includes(index) || index !== openIndex) return;
+      bonusState.claimed.push(index);
+      localStorage.setItem(bonusKey, JSON.stringify(bonusState));
+      alert(`✅ ${index + 1}-kunlik bonus olindi!`);
+      renderDominos();
+    }
+
+    renderDominos();
+  </script>
+</body>
+</html>

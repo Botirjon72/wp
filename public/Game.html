@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1xGames - O'yin Platformasi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #0ff;
+      --jackpot: #ffd700;
+      --crash: #ff00aa;
+      --fruits: #00ffaa;
+      --bonus: #ffaa00;
+      --bg-dark: #0a0a1a;
+      --card-bg: rgba(20, 20, 40, 0.8);
+    }
+
+   body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background:  url('./bg2.jpg') no-repeat center center fixed;
+      background-size: cover;         /* Bu joy asosiy yechim */
+      background-position: center;   /* Markazda joylashadi */
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      color : #fff;
+    }
+    
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      padding-bottom: 80px;
+    }
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      padding: 15px 20px;
+      background: rgba(10, 10, 30, 0.9);
+      border-bottom: 1px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      margin-bottom: 20px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-profile img.avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    .user-profile h3 {
+      font-size: 16px;
+      color: var(--primary);
+    }
+
+    .user-profile p {
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .user-stats {
+      text-align: right;
+    }
+
+    .user-stats p {
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Yangi game-grid stili */
+    .game-grid {
+      display: grid;
+      margin-top: 15px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 10px 15px;
+    }
+
+    /* Yangi game-btn stili - rasmga mos */
+    .game-btn {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .game-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .game-btn img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .game-btn span,.game-btn a {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .game-stats {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bonus);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px 10px;
+      border-radius: 15px;
+      margin-top: 5px;
+    }
+
+    .stats-highlight {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Bo'lim sarlavhalari */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      background: rgba(15, 15, 35, 0.8);
+      border-bottom: 2px solid;
+    }
+
+    .jackpot-header {
+      border-color: var(--jackpot);
+    }
+
+    .crash-header {
+      border-color: var(--crash);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .jackpot-icon {
+      color: var(--jackpot);
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    }
+
+    .crash-icon {
+      color: var(--crash);
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 0, 170, 0.7);
+    }
+
+    .title-text {
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .jackpot-text {
+      color: var(--jackpot);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .crash-text {
+      color: var(--crash);
+      text-shadow: 0 0 10px rgba(255, 0, 170, 0.5);
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 2px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+    }
+
+    .demo-badge {
+      background: linear-gradient(135deg, #ff00aa, #ff0066);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 0 10px rgba(255, 0, 170, 0.5);
+    }
+
+    .best-badge {
+      background: linear-gradient(135deg, #00ffaa, #00cc88);
+      color: #003322;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    /* O'yin turlari uchun ranglar */
+    .fruit-btn {
+      border-color: var(--fruits);
+      background: rgba(0, 40, 30, 0.6);
+    }
+
+    .apple-btn {
+      border-color: #ff6b6b;
+      background: rgba(60, 0, 0, 0.6);
+    }
+
+    .crash-btn {
+      border-color: var(--crash);
+      background: rgba(40, 0, 30, 0.6);
+    }
+
+    .cocktail-btn {
+      border-color: #a29bfe;
+      background: rgba(20, 0, 60, 0.6);
+    }
+
+    /* Pastki navigatsiya */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid var(--primary);
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    /* Disabled holatdagi tugmalar */
+    .game-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(100%);
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Disabled tugmalar hover qilganda o'zgarish bo'lmasin */
+    .game-btn:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+
+    @media (max-width: 480px) {
+      .game-btn {
+        height: 160px;
+      }
+      
+      .game-btn img {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .game-btn span {
+        font-size: 16px;
+      }
+      
+      .game-stats {
+        font-size: 12px;
+      }
+      
+      .title-text {
+        font-size: 20px;
+      }
+      
+      .section-subtitle {
+        font-size: 14px;
+      }
+      
+      .demo-badge, .best-badge {
+        font-size: 14px;
+        padding: 4px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p> <!-- Qo‘shildi -->
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+    <!-- JACKPOT bo'limi -->
+    <div class="game-grid">
+      <button class="game-btn fruit-btn ">
+        <img src="./img/default.jpg" alt="Fruit">
+        <a href="games/Poxoyfusk.html">Poxoyfusk</a>
+      </button>
+      
+      <button class="game-btn apple-btn " >
+        <img src="./img/default.jpg" alt="Apple Of Fortune">
+        <a href="games/Game2.html">PoxoySpin</a>
+      </button>
+    </div>
+
+    <!-- CRASH bo'limi -->
+    <div class="game-grid">
+      <button class="game-btn crash-btn"disabled>
+        <img src="./img/default.jpg" alt="Crash">
+        <span>Crash</span>
+      </button>
+      
+      <button class="game-btn cocktail-btn"disabled>
+        <img src="./img/default.jpg" alt="Fruit Cocktail">
+        <span>Fruit Cocktail</span>
+      </button>
+    </div>
+
+      <div class="game-grid">
+        <button class="game-btn crash-btn"disabled>
+          <img src="./img/default.jpg" alt="Crash">
+          <span>Crash</span>
+        </button>
+        
+        <button class="game-btn apple-btn"disabled>
+          <img src="./img/default.jpg" alt="Fruit Cocktail">
+          <span>Fruit Cocktail</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    REKLAMA - Yangi o'yinlar tez orada!
+  </footer>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
+
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+    } else {
+      fetch(`http://localhost:3000/api/user?telegram_id=123456`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+        });
+    }
+  </script>
+
+  
+
+
+</body>
+</html>
