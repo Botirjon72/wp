@@ -168,36 +168,6 @@
   </footer>
 
   <!-- FETCH USER DATA FROM API -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
- <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
-
-  const userId = 123456; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
-
-  if (!userId) {
-    document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-    document.getElementById('avatar').src = './img/default.jpg';
-  } else {
-    fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
-      .then(res => {
-        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-        document.getElementById('level').textContent = `Level: ${data.level}`;
-        document.getElementById('xp').textContent = `XP: ${data.xp}`;
-        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
-        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
-        document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('name').textContent = 'Xatolik!';
-      });
-  }
-</script>
 
 
 </body>
