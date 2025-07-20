@@ -12,10 +12,11 @@
   box-sizing: border-box;
 }
 
+
   body {
     min-height: 100vh;
     font-family: 'Rajdhani', sans-serif;
-    background:  url('./bg2.jpg') no-repeat center center fixed;
+    background:  url('./public/bg2.jpg') no-repeat center center fixed;
     background-size: cover;         /* Bu joy asosiy yechim */
     background-position: center;   /* Markazda joylashadi */
     background-repeat: no-repeat;
@@ -23,6 +24,7 @@
     flex-direction: column;
     color : #fff;
   }
+
 
 .user-info {
   display: flex;
@@ -56,7 +58,7 @@
 }
 
 .toggle-buttons button {
-  background: #2d2d61;
+  background: #1a1a2e;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -88,7 +90,7 @@ main {
 
 .task-item,
 .reward-card {
-  background: rgba(44, 22, 22, 0.403);
+  background: rgba(255, 255, 255, 0.05);
   padding: 15px;
   border-radius: 15px;
   margin-bottom: 10px;
@@ -181,8 +183,22 @@ footer {
 </head>
 <body>
 
- 
-  <div class="user-info">
+  <!-- <div class="user-info">
+    <div class="user-profile">
+      <img src="./img/Avatar.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Foydalanuvchi</h3>
+        <p id="level">Level: 1</p>
+        <p id="xp">XP: 0</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">Rank: Bronze</p>
+      <p id="coins">Tanga: 0</p>
+    </div>
+  </div> -->
+
+    <div class="user-info">
     <div class="user-profile">
       <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
       <div>
@@ -225,7 +241,7 @@ footer {
   </footer>
 
   <script>
-    const tg = window.Telegram?.WebApp || {}; // ✅ Optional chaining ishlatildi
+     const tg = window.Telegram?.WebApp || {}; // ✅ Optional chaining ishlatildi
     const userId = tg.initDataUnsafe?.user?.id || 123456; // Testda qo‘lda berilgan ID
 
     if (!userId) {
@@ -234,13 +250,12 @@ footer {
     }
 
     function loadUser() {
-    if (!userId) {
-      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-      document.getElementById('avatar').src = './img/default.jpg';
-      return; // => hech narsa yuklamaymiz
-    }
-
-    fetch(`/api/user?telegram_id=${userId}`)
+      // document.getElementById('name').textContent = 'Ism Familiya';
+      // document.getElementById('level').textContent = 'Level: 2';
+      // document.getElementById('xp').textContent = 'XP: 150';
+      // document.getElementById('rank').textContent = 'Rank: Silver';
+      // document.getElementById('coins').textContent = 'Tanga: 550';
+       fetch(`http://localhost:3000/api/user?telegram_id=${userId}`)
       .then(res => {
         if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
         return res.json();
@@ -252,29 +267,18 @@ footer {
         document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
         document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
         document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-
-        // ✅ Faqat foydalanuvchi muvaffaqiyatli topilgach yuklaymiz
-        loadTasks();
-        loadRanks();
-        loadReferrals();
       })
       .catch(err => {
         console.error(err);
         document.getElementById('name').textContent = 'Xatolik!';
       });
-  }
-
-  
+    }
 
     const tasks = [
       { id: 1, name: 'Botni ishga tushiring', desc: 'Telegram botni ishga tushiring.', reward: 5, done: false },
-      { id: 2, name: 'Profilni to‘ldiring', desc: 'Profilingizni to‘ldiring.', reward: 10, done: false },
+      { id: 2, name: 'Profilni to‘ldiring', desc: 'Profilingizni to‘ldiring.', reward: 10, done: true },
       { id: 3, name: 'Kunlik kirish', desc: 'Bugun tizimga kiring.', reward: 3, done: false },
-      { id: 4, name: 'O‘yinni aylantiring', desc: 'Spinni kamida bir marta aylantiring.', reward: 7, done: false },
-      { id: 5, name: 'Do‘stingizni taklif qiling', desc: '1 ta do‘stingizni taklif qiling va u botga kirsin.', reward: 15, done: false },
-      { id: 6, name: 'Topshiriqni bajarib ko‘ring', desc: 'Har qanday 1 ta topshiriqni muvaffaqiyatli bajaring.', reward: 4, done: false },
     ];
-
 
     function loadTasks() {
       const list = document.getElementById('taskList');
@@ -377,8 +381,13 @@ footer {
     }
 
     loadUser();
-
+    loadTasks();
+    loadRanks();
+    loadReferrals();
   </script>
 
 </body>
+
+
+
 </html>

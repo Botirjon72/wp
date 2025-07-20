@@ -8,89 +8,60 @@
   app.use(express.json());
 
   // Foydalanuvchini olish yoki yaratish
-  app.get('/api/user', async (req, res) => {
-    const telegram_id = req.query.telegram_id;
-    const name = req.query.name || 'No Name';
-    const avatar = req.query.avatar || '/img/default.jpg';
+ app.get('/api/user', async (req, res) => {
+  const telegram_id = req.query.telegram_id;
+  const name = req.query.name || 'No Name';
+  const avatar = req.query.avatar || '/img/default.jpg';
 
-    if (!telegram_id) return res.status(400).send('telegram_id kerak');
+  if (!telegram_id) return res.status(400).send('telegram_id kerak');
 
-    try {
-      const result = await pool.query(
-        'SELECT name, level, xp, rank, score, avatar, coins FROM users WHERE telegram_id = $1',
-        [telegram_id]
+  try {
+    const userResult = await pool.query(
+      'SELECT name, level, xp, rank, score, avatar, coins, last_bonus FROM users WHERE telegram_id = $1',
+      [telegram_id]
+    );
+
+    if (userResult.rows.length === 0) {
+      const insertResult = await pool.query(
+        `INSERT INTO users (telegram_id, name, avatar, coins, last_bonus)
+         VALUES ($1, $2, $3, 5000, NOW())
+         RETURNING name, level, xp, rank, score, avatar, coins`,
+        [telegram_id, name, avatar]
+      );
+      console.log(`Yangi foydalanuvchi yaratildi: ${telegram_id}`);
+      return res.json(insertResult.rows[0]);
+    }
+
+    let user = userResult.rows[0];
+    const now = new Date();
+    const lastBonus = user.last_bonus ? new Date(user.last_bonus) : null;
+
+    // Har kuni faqat bir marta tanga beriladi
+    if (!lastBonus || lastBonus.toDateString() !== now.toDateString()) {
+      const bonus = Math.floor(Math.random() * 3000) + 1;
+
+      const updateResult = await pool.query(
+        `UPDATE users SET coins = coins + $1, last_bonus = $2 WHERE telegram_id = $3
+         RETURNING name, level, xp, rank, score, avatar, coins`,
+        [bonus, now, telegram_id]
       );
 
-      if (result.rows.length === 0) {
-        const insertResult = await pool.query(
-          `INSERT INTO users (telegram_id, name, avatar, coins)
-          VALUES ($1, $2, $3, 5000)
-          RETURNING name, level, xp, rank, score, avatar, coins`,
-          [telegram_id, name, avatar]
-        );
-        console.log(`Yangi foydalanuvchi yaratildi: ${telegram_id}`);
-        return res.json(insertResult.rows[0]);
-      }
-
-      console.log(`Foydalanuvchi topildi: ${telegram_id}`);
-      return res.json(result.rows[0]);
-    } catch (err) {
-      console.error('Server xatolik (/api/user):', err);
-      res.status(500).send('Serverda xatolik');
+      user = updateResult.rows[0];
+      console.log(`Bonus ${bonus} tanga berildi: ${telegram_id}`);
+    } else {
+      console.log(`Bugun bonus allaqachon olingan: ${telegram_id}`);
     }
-  });
 
-  // RANK STATS
-  app.get('/api/rank-stats', async (req, res) => {
-    try {
-      const result = await pool.query(`
-        SELECT rank, COUNT(*) AS count
-        FROM users
-        GROUP BY rank
-      `);
-      res.json(result.rows);
-    } catch (err) {
-      console.error('Rank statistikasi olishda xatolik:', err);
-      res.status(500).json({ error: 'Ichki server xatoligi' });
-    }
-  });
+    return res.json(user);
+  } catch (err) {
+    console.error('Server xatolik (/api/user):', err);
+    res.status(500).send('Serverda xatolik');
+  }
+});
 
-  // TASK LIST
-  app.get('/api/tasks', async (req, res) => {
-    const { telegram_id } = req.query;
 
-    try {
-      const result = await pool.query(`
-        SELECT t.id, t.name, t.description, t.reward,
-              CASE WHEN ut.task_id IS NOT NULL THEN true ELSE false END AS completed
-        FROM tasks t
-        LEFT JOIN user_tasks ut ON ut.task_id = t.id AND ut.telegram_id = $1
-      `, [telegram_id]);
+  
 
-      res.json(result.rows);
-    } catch (err) {
-      console.error("Vazifalarni olishda xatolik:", err);
-      res.status(500).json({ error: "Ichki server xatoligi" });
-    }
-  });
-
-  // Complete Task
-  app.post('/api/complete-task', async (req, res) => {
-    const { telegram_id, task_id } = req.body;
-
-    try {
-      await pool.query(`
-        INSERT INTO user_tasks (telegram_id, task_id)
-        VALUES ($1, $2)
-        ON CONFLICT DO NOTHING
-      `, [telegram_id, task_id]);
-
-      res.json({ message: "✅ Vazifa bajarilgan deb belgilandi!" });
-    } catch (err) {
-      console.error("Taskni belgilashda xatolik:", err);
-      res.status(500).json({ error: "Xatolik yuz berdi" });
-    }
-  });
 
   // Update Balance
   app.post('/api/update-balance', async (req, res) => {

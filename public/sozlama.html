@@ -111,10 +111,10 @@
 
   <!-- User ismini o‘zgartirish -->
   <p><b>📌 User ismi:</b></p>
-  <input type="text" id="usernameInput" value="PoxoyZ" style="padding:5px; border-radius:5px; border:none; width:60%;">
+  <input type="text" id="usernameInput" style="padding:5px; border-radius:5px; border:none; width:60%;">
   <button class="change-button" onclick="changeUsername()">Saqlash</button>
 
-  <p style="margin-top:10px;">📌 Siz shu vaqtgacha: <span class="highlight">18,000 tanga</span> yig‘gansiz!</p>
+  <p style="margin-top:10px;" id="coins">📌 Siz shu vaqtgacha: <span class="highlight"></span> yig‘gansiz!</p>
 </div>
 
 
@@ -254,6 +254,79 @@
   }
 
 
+</script>
+<script>
+   const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const userId = tg.initDataUnsafe?.user?.id;
+
+  async function loadUserData() {
+   if (!userId) {
+    document.getElementById('usernameInput').textContent = 'Telegram ID topilmadi!';
+    document.getElementById('avatar').src = './img/default.jpg';
+  } else {
+    fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+      .then(res => {
+        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('usernameInput').textContent = data.name || 'Nomaʼlum';
+        document.getElementById('level').textContent = `Level: ${data.level}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+        document.getElementById('avatarSelect').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('name').textContent = 'Xatolik!';
+      });
+  }
+  }
+
+  // Profil rasmini o‘zgartirish (POST)
+  async function changeProfileFromSelect() {
+    const selectedAvatar = document.getElementById('avatarSelect').value;
+    document.getElementById('profilePic').src = selectedAvatar;
+
+    try {
+      await fetch('/api/user/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar: selectedAvatar })
+      });
+    } catch (err) {
+      alert("❌ Rasmni saqlashda xatolik");
+    }
+  }
+
+  // Ismni o‘zgartirish (POST)
+  async function changeUsername() {
+    const newName = document.getElementById('usernameInput').value.trim();
+    if (!newName) return alert("❌ Ism bo‘sh bo‘lmasligi kerak!");
+
+    try {
+      await fetch('/api/user/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newName })
+      });
+
+      alert("✅ Ismingiz o‘zgartirildi: " + newName);
+    } catch (err) {
+      alert("❌ Ismni saqlashda xatolik");
+    }
+  }
+
+  // Sahifa yuklanganda ma’lumotlarni yuklash
+  window.addEventListener('DOMContentLoaded', loadUserData);
+
+  // FAQ toggle
+  function toggleAnswer(el) {
+    el.classList.toggle("active");
+  }
 </script>
 
 
