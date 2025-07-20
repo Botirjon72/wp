@@ -238,7 +238,6 @@
     const userId = tg.initDataUnsafe?.user?.id; // Eslatma: initDataUnsafe xavfsiz emas, serverda autentifikatsiya qiling!
     let userBalance = 0;
 
-    // Foydalanuvchi ma'lumotlarini olish
     async function fetchUserData() {
       try {
         const res = await fetch(`/api/user?telegram_id=${userId}`);
@@ -249,7 +248,7 @@
         document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
         document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'} | : ${data.score || 0}`;
         document.getElementById('coins').textContent = `Tanga: ${data.coins|| 0}`;
-        userBalance = data.score || 0;
+        userBalance = data.coins || 0;
       } catch (err) {
         console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
         document.getElementById('name').textContent = 'Xatolik yuz berdi';

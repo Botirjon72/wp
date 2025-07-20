@@ -520,9 +520,7 @@ const values = shuffle(weightedValues);
 
 }
 
-
-  // 👤 Telegram user ma’lumotlarini olish
-  const userId = tg?.initDataUnsafe?.user?.id || "demo";
+  const userId = tg?.initDataUnsafe?.user?.id;
   fetch(`/api/user?telegram_id=${userId}`)
     .then(res => res.json())
     .then(data => {
@@ -530,13 +528,13 @@ const values = shuffle(weightedValues);
       document.getElementById('level').textContent = `Level: ${data.level}`;
       document.getElementById('xp').textContent = `XP: ${data.xp}`;
       document.getElementById('rank').textContent = `Rank: ${data.rank}`;
-      userCoins = data.coins || 5000;
       document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
+      userCoins = data.coins || 0;
       document.getElementById('avatar').src = data.avatar || './img/default.jpg';
     })
     .catch(() => {
       document.getElementById('name').textContent = 'Yuklanmadi';
-    });
+});
 </script>
 
 </body>
