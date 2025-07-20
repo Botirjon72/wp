@@ -255,7 +255,7 @@ footer {
       // document.getElementById('xp').textContent = 'XP: 150';
       // document.getElementById('rank').textContent = 'Rank: Silver';
       // document.getElementById('coins').textContent = 'Tanga: 550';
-       fetch(`http://localhost:3000/api/user?telegram_id=${userId}`)
+       fetch(`api/user?telegram_id=${userId}`)
       .then(res => {
         if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
         return res.json();

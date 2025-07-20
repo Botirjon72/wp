@@ -422,7 +422,7 @@
       document.getElementById('name').textContent = 'Telegram ID topilmadi!';
       document.getElementById('avatar').src = './img/default.jpg';
     } else {
-      fetch(`/api/user?telegram_id=123456`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+      fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
         .then(res => {
           if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
           return res.json();
