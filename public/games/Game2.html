@@ -13,32 +13,18 @@
       box-sizing: border-box;
     }
 
-    
-
-    /* body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(white 1px, transparent 1px),
-                  radial-gradient(white 1px, transparent 1px);
-      background-position: 0 0, 50px 50px;
-      background-size: 100px 100px;
-    } */
-
-  
-
-    main {
-      flex: 1;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #000 60%, #111);
+      font-family: 'Rajdhani', sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding-bottom: 100px;
-      position: relative;
-      z-index: 2;
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
     }
-
 
     .user-info {
       display: flex;
@@ -50,6 +36,8 @@
       padding-bottom: 15px;
       border-bottom: 1px solid #0ff;
       align-items: center;
+      width: 100%;
+      max-width: 600px;
     }
 
     .user-profile {
@@ -62,12 +50,14 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      border: 2px solid #0ff;
+      border: 3px solid #0ff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
     .user-info h3 {
       color: #0ff;
       font-size: 24px;
+      text-shadow: 0 0 5px #0ff;
     }
 
     .user-info p {
@@ -76,86 +66,22 @@
       opacity: 0.8;
     }
 
-   
-
-    footer.footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.7);
-      text-align: center;
-      color: #fff;
-      font-size: 13px;
-      border-top: 1px solid #0ff;
-      z-index: 3;
-      backdrop-filter: blur(5px);
-    }
-
-    @media (max-width: 768px) {
-      .menu-item {
-        width: 100px;
-        height: 100px;
-        font-size: 12px;
-      }
-
-      .menu-item img {
-        width: 30px;
-        height: 30px;
-      }
-
-      .user-info h3 {
-        font-size: 20px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      
-      .menu-item {
-        width: 80px;
-        height: 100px;
-        font-size: 15px;
-      }
-
-      .menu-item img {
-        width: 40px;
-        height: 35px;
-      }
-
-      .user-info h3 {
-        font-size: 20px;
-      }
-    }
-  </style>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at center, #000 60%, #111);
-      font-family: 'Arial', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #fff;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-
     .wheel-container {
       position: relative;
       width: 450px;
-      height: 450px;  
+      height: 450px;
       padding: 20px;
       box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      border: 10px solid gold;
+      border: 12px solid gold;
       background: conic-gradient(
         #4b0082 0deg 18deg, #330066 18deg 36deg,
         #4b0082 36deg 54deg, #330066 54deg 72deg,
@@ -170,7 +96,7 @@
       );
       position: relative;
       transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-      box-shadow: 0 0 20px gold;
+      box-shadow: 0 0 30px gold, inset 0 0 20px rgba(255, 215, 0, 0.5);
     }
 
     .wheel span {
@@ -178,15 +104,13 @@
       left: 47%;
       top: 48%;
       transform-origin: 0 0;
-      font-weight: bold;
+      font-weight: 700;
       font-size: 16px;
       color: #fff;
       text-shadow: 0 0 5px #000;
       letter-spacing: 0.1px;
       pointer-events: none;
-      font-size: 10px;
       transform: rotate(var(--angle)) translate(170px) rotate(calc(-1 * var(--angle)));
-    
     }
 
     .wheel span.large-text {
@@ -195,88 +119,120 @@
     }
 
     .pointer {
-      width: 10px;
-      height: 50px;
-      background-color: #f9d974;
+      width: 15px;
+      height: 60px;
+      background: linear-gradient(#f9d974, #ffeb3b);
       position: absolute;
-      top: 0;
-      left: 48%;
+      top: -10px;
+      left: 49%;
       z-index: 2;
-      border-radius: 0 0 5px 5px;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 0 15px #f9d974;
     }
 
     .dynamic-pointer {
       position: absolute;
       left: 50%;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 10%;
+      transform: translateX(-50%);
       color: #fff;
-      font-size: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #0ff;
       display: none;
       text-align: center;
       white-space: nowrap;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 5px 10px;
+      border-radius: 5px;
     }
+
     .bet-options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
     }
+
     .bet-btn {
-      padding: 8px 16px;
+      padding: 10px 20px;
       background: #111;
       color: #0ff;
-      border: 1px solid #0ff;
-      border-radius: 6px;
+      border: 2px solid #0ff;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      font-size: 16px;
     }
+
     .bet-btn:hover {
       background: #0ff;
       color: #000;
+      transform: scale(1.05);
     }
+
     #customBet {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #0ff;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #0ff;
       background: #000;
       color: #0ff;
-      width: 140px;
+      width: 150px;
       text-align: center;
-    }
-    #result {
-      margin: 15px;
-      font-size: 20px;
-      color: #0ff;
-    } 
-    
-    #startButton{
-      padding: 10px 20px;
       font-size: 16px;
+    }
+
+    #result {
+      margin: 20px;
+      font-size: 22px;
+      color: #0ff;
+      text-align: center;
+      text-shadow: 0 0 5px #0ff;
+    }
+
+    #startButton {
+      padding: 12px 25px;
+      font-size: 18px;
       margin-top: 20px;
       border: none;
-      border-radius: 6px;
-      background: #0ff;
+      border-radius: 8px;
+      background: linear-gradient(45deg, #0ff, #00e6e6);
       color: #000;
       cursor: pointer;
       font-weight: bold;
-      box-shadow: 0 0 8px #0ff;
-      transition: background 0.3s;
+      box-shadow: 0 0 10px #0ff;
+      transition: all 0.3s;
     }
 
-    #startButton:hover{
-      background: #00e6e6;
+    #startButton:hover {
+      background: linear-gradient(45deg, #00e6e6, #0ff);
+      transform: scale(1.05);
     }
 
     .action-buttons {
       display: flex;
-      gap: 10px;
+      gap: 15px;
       justify-content: center;
       flex-wrap: wrap;
       margin-bottom: 30px;
     }
 
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+      border-top: 2px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(10px);
+    }
 
     @media (max-width: 500px) {
       .wheel-container {
@@ -285,33 +241,37 @@
       }
 
       .wheel span {
-        font-size: 18px;
-        transform: rotate(var(--angle)) translate(165px) rotate(calc(-1 * var(--angle)));
+        font-size: 14px;
+        transform: rotate(var(--angle)) translate(150px) rotate(calc(-1 * var(--angle)));
       }
 
       .wheel span.large-text {
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .pointer {
         width: 10px;
-        height: 20px;
+        height: 40px;
       }
 
       .dynamic-pointer {
-        font-size: 14px;
+        font-size: 16px;
+        top: 5%;
       }
-
-
 
       #result {
-        font-size: 16px;
+        font-size: 18px;
       }
+
       .bet-btn, #customBet {
         font-size: 14px;
-        padding: 6px 12px;
+        padding: 8px 15px;
       }
-    
+
+      #startButton {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
     }
 
     @media (max-width: 440px) {
@@ -321,22 +281,23 @@
       }
 
       .wheel span {
-        font-size: 10px;
+        font-size: 12px;
         transform: rotate(var(--angle)) translate(100px) rotate(calc(-1 * var(--angle)));
       }
 
       .wheel span.large-text {
-        font-size: 11px;
+        font-size: 14px;
       }
 
       .dynamic-pointer {
-        font-size: 12px;
+        font-size: 14px;
       }
 
       #result {
-        font-size: 14px;
+        font-size: 16px;
       }
     }
+
     @media (max-width: 380px) {
       .wheel-container {
         width: 310px;
@@ -349,7 +310,7 @@
       }
 
       .wheel span.large-text {
-        font-size: 11px;
+        font-size: 12px;
       }
 
       .dynamic-pointer {
@@ -358,8 +319,7 @@
 
       #result {
         font-size: 14px;
-        margin-top: 20px;
-        margin: 50px;
+        margin: 30px;
       }
     }
   </style>
@@ -395,210 +355,208 @@
       <input type="number" id="customBet" placeholder="Tanga miqdori..." min="100" step="100" />
     </div>
     <div class="action-buttons">
-      <button id="startButton" onclick="spinWheel()">🎰 Garov Tikish</button>
+      <button id="startButton">🎰 Garov Tikish</button>
     </div>
     <div id="result"></div>
   </div>
 
-  <footer class="footer">
-    REKLAMA
-  </footer>
+  <footer class="footer">REKLAMA</footer>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
- const tg = window.Telegram.WebApp;
-tg.expand();
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-const weightedValues = [
-  ...Array(4).fill("x1.1"),
-  ...Array(3).fill("x1.2"),
-  ...Array(3).fill("x1.3"),
-  ...Array(2).fill("x1.4"),
-  ...Array(2).fill("x1.5"),
-  ...Array(2).fill("x2"),
-  ...Array(2).fill("x3"),
-  "x5",
-  "x10",
-  "x25",
-  "x50",
-  "x92",
-  "x500",
-  "x1K",
-  "x2K"
-];
-
-const values = shuffle(weightedValues);
-const wheel = document.getElementById("wheel");
-const dynamicPointer = document.getElementById("dynamicPointer");
-const resultText = document.getElementById("result");
-const startButton = document.getElementById("startButton");
-const customBetInput = document.getElementById("customBet");
-let userCoins = 0;
-let isSpinning = false;
-
-values.forEach((val, i) => {
-  const span = document.createElement("span");
-  const angle = (360 / values.length) * i + (360 / values.length) / 2;
-  span.innerText = val;
-  span.style.setProperty('--angle', `${angle}deg`);
-  if (parseFloat(val.replace("x", "").replace("K", "000")) >= 1000) span.classList.add("large-text");
-  wheel.appendChild(span);
-});
-
-async function fetchUserData() {
-  const userId = tg?.initDataUnsafe?.user?.id;
-  console.log("Foydalanuvchi ma'lumotlari yuklanmoqda, userId:", userId);
-  try {
-    const res = await fetch(`/api/user?telegram_id=${userId}`);
-    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
-    const data = await res.json();
-    document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
-    document.getElementById('level').textContent = `Level: ${data.level || 0}`;
-    document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
-    document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'}`;
-    document.getElementById('coins').textContent = `Tanga: ${data.coins || 0}`;
-    userCoins = data.coins || 0;
-    document.getElementById('avatar').src = data.avatar || './img/default.jpg';
-    console.log("Foydalanuvchi ma'lumotlari yuklandi:", data);
-  } catch (err) {
-    console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
-    document.getElementById('name').textContent = 'Yuklanmadi';
-    document.getElementById('coins').textContent = 'Tanga: 0';
-  }
-}
-
-async function updateBalance(amount) {
-  const userId = tg?.initDataUnsafe?.user?.id;
-  console.log("Balans yangilash so'rovi, amount:", amount);
-  try {
-    const res = await fetch('/api/update-balance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telegram_id: userId, amount })
-    });
-    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
-    const data = await res.json();
-    if (typeof data.newScore !== 'number') throw new Error('Noto‘g‘ri server javobi');
-    userCoins = data.newScore;
-    document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
-    console.log("Balans yangilandi:", userCoins);
-    return userCoins;
-  } catch (err) {
-    console.error("Balans yangilashda xato:", err);
-    throw err;
-  }
-}
-
-document.querySelectorAll('.bet-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const label = btn.textContent.trim();
-    let amount = 300;
-    switch (true) {
-      case label.includes('Min'):
-        amount = 300;
-        break;
-      case label.includes('Max'):
-        amount = Math.min(userCoins, 3000);
-        break;
-      case label.includes('2x'):
-        amount = Math.min(300 * 2, 3000);
-        break;
-      case label.includes('5x'):
-        amount = Math.min(3000, userCoins);
-        break;
-      default:
-        amount = parseInt(btn.dataset.amount) || 300;
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
     }
-    customBetInput.value = amount;
-    console.log("Garov tanlandi:", amount);
-  });
-});
 
-let rotation = 0;
-function spinWheel() {
-  if (isSpinning) {
-    console.log("Ruletka allaqachon aylanmoqda!");
-    return;
-  }
+    const weightedValues = [
+      ...Array(4).fill("x1.1"),
+      ...Array(3).fill("x1.2"),
+      ...Array(3).fill("x1.3"),
+      ...Array(2).fill("x1.4"),
+      ...Array(2).fill("x1.5"),
+      ...Array(2).fill("x2"),
+      ...Array(2).fill("x3"),
+      "x5",
+      "x10",
+      "x25",
+      "x50",
+      "x92",
+      "x500",
+      "x1K",
+      "x2K"
+    ];
 
-  const bet = parseInt(customBetInput.value);
-  console.log("Garov tikish boshlandi, bet:", bet);
+    const values = shuffle(weightedValues);
+    const wheel = document.getElementById("wheel");
+    const dynamicPointer = document.getElementById("dynamicPointer");
+    const resultText = document.getElementById("result");
+    const startButton = document.getElementById("startButton");
+    const customBetInput = document.getElementById("customBet");
+    let userCoins = 0;
+    let isSpinning = false;
 
-  if (!bet || bet < 300 || bet > 3000) {
-    resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
-    resultText.style.color = "orange";
-    console.log("Xato: Noto'g'ri garov miqdori:", bet);
-    return;
-  }
+    values.forEach((val, i) => {
+      const span = document.createElement("span");
+      const angle = (360 / values.length) * i + (360 / values.length) / 2;
+      span.innerText = val;
+      span.style.setProperty('--angle', `${angle}deg`);
+      if (parseFloat(val.replace("x", "").replace("K", "000")) >= 1000) span.classList.add("large-text");
+      wheel.appendChild(span);
+    });
 
-  if (bet > userCoins) {
-    resultText.innerText = "❌ Tangalaringiz yetarli emas!";
-    resultText.style.color = "red";
-    console.log("Xato: Yetarli tanga yo'q, balans:", userCoins);
-    return;
-  }
+    async function fetchUserData() {
+      const userId = tg?.initDataUnsafe?.user?.id;
+      console.log("Foydalanuvchi ma'lumotlari yuklanmoqda, userId:", userId);
+      try {
+        const res = await fetch(`/api/user?telegram_id=${userId}`);
+        if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+        const data = await res.json();
+        document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
+        document.getElementById('level').textContent = `Level: ${data.level || 0}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'}`;
+        document.getElementById('coins').textContent = `Tanga: ${data.coins || 0}`;
+        userCoins = data.coins || 0;
+        document.getElementById('avatar').src = data.avatar || './img/default.jpg';
+        console.log("Foydalanuvchi ma'lumotlari yuklandi:", data);
+      } catch (err) {
+        console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
+        document.getElementById('name').textContent = 'Yuklanmadi';
+        document.getElementById('coins').textContent = 'Tanga: 0';
+      }
+    }
 
-  isSpinning = true;
-  startButton.disabled = true;
+    async function updateBalance(amount) {
+      const userId = tg?.initDataUnsafe?.user?.id;
+      console.log("Balans yangilash so'rovi, amount:", amount);
+      try {
+        const res = await fetch('/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount })
+        });
+        if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') throw new Error('Noto‘g‘ri server javobi');
+        userCoins = data.newScore;
+        document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
+        console.log("Balans yangilandi:", userCoins);
+        return userCoins;
+      } catch (err) {
+        console.error("Balans yangilashda xato:", err);
+        throw err;
+      }
+    }
 
-  updateBalance(-bet).then(() => {
-    const randomIndex = Math.floor(Math.random() * values.length);
-    const anglePerSlice = 360 / values.length;
-    const targetAngle = 360 - (randomIndex * anglePerSlice);
-    rotation += 360 * 5 + targetAngle;
-    wheel.style.transform = `rotate(${rotation}deg)`;
-    console.log("Ruletka aylandi, rotation:", rotation, "targetIndex:", randomIndex);
+    document.querySelectorAll('.bet-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.textContent.trim();
+        let amount = 300;
+        switch (true) {
+          case label.includes('Min'):
+            amount = 300;
+            break;
+          case label.includes('Max'):
+            amount = Math.min(userCoins, 3000);
+            break;
+          case label.includes('2x'):
+            amount = Math.min(300 * 2, 3000);
+            break;
+          case label.includes('5x'):
+            amount = Math.min(3000, userCoins);
+            break;
+          default:
+            amount = parseInt(btn.dataset.amount) || 300;
+        }
+        customBetInput.value = amount;
+        console.log("Garov tanlandi:", amount);
+      });
+    });
 
-    setTimeout(() => {
-      const normalizedRotation = (rotation % 360 + 360) % 360;
-      const indexFromTop = Math.floor(normalizedRotation / anglePerSlice) % values.length;
-      const selectedValue = values[(values.length - indexFromTop) % values.length];
-      const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
-      const winAmount = Math.floor(multiplier * bet);
+    let rotation = 0;
+    function spinWheel() {
+      if (isSpinning) {
+        console.log("Ruletka allaqachon aylanmoqda!");
+        return;
+      }
 
-      updateBalance(winAmount).then(() => {
-        resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
-        resultText.style.color = "#00ff00";
-        dynamicPointer.style.display = "block";
-        dynamicPointer.innerText = `Yutuq: ${winAmount}`;
-        dynamicPointer.style.transform = `translate(-50%, -50%)`;
-        console.log("Yutuq hisoblandi:", { selectedValue, winAmount });
+      const bet = parseInt(customBetInput.value);
+      console.log("Garov tikish boshlandi, bet:", bet);
+
+      if (!bet || bet < 300 || bet > 3000) {
+        resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
+        resultText.style.color = "orange";
+        console.log("Xato: Noto'g'ri garov miqdori:", bet);
+        return;
+      }
+
+      if (bet > userCoins) {
+        resultText.innerText = "❌ Tangalaringiz yetarli emas!";
+        resultText.style.color = "red";
+        console.log("Xato: Yetarli tanga yo'q, balans:", userCoins);
+        return;
+      }
+
+      isSpinning = true;
+      startButton.disabled = true;
+
+      updateBalance(-bet).then(() => {
+        const randomIndex = Math.floor(Math.random() * values.length);
+        const anglePerSlice = 360 / values.length;
+        // Natijani tepaga (0 gradus) moslashtirish
+        const targetAngle = 360 * 5 + (360 - (randomIndex * anglePerSlice));
+        rotation = targetAngle; // Faqat kerakli burchakka aylantirish
+        wheel.style.transform = `rotate(${rotation}deg)`;
+        console.log("Ruletka aylandi, rotation:", rotation, "targetIndex:", randomIndex);
 
         setTimeout(() => {
-          dynamicPointer.style.display = "none";
-        }, 5000);
+          const selectedValue = values[randomIndex]; // To'g'ri indeksdan qiymat olish
+          const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
+          const winAmount = Math.floor(multiplier * bet);
+
+          updateBalance(winAmount).then(() => {
+            resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
+            resultText.style.color = "#00ff00";
+            dynamicPointer.style.display = "block";
+            dynamicPointer.innerText = `${selectedValue} (${winAmount} tanga)`;
+            dynamicPointer.style.transform = `translateX(-50%)`;
+            console.log("Yutuq hisoblandi:", { selectedValue, winAmount });
+
+            setTimeout(() => {
+              dynamicPointer.style.display = "none";
+            }, 5000);
+          }).catch(err => {
+            resultText.innerText = "❌ Yutuqni hisoblashda xato!";
+            resultText.style.color = "red";
+            console.error("Yutuqni hisoblashda xato:", err);
+          }).finally(() => {
+            isSpinning = false;
+            startButton.disabled = false;
+            console.log("Aylanish tugadi, isSpinning:", isSpinning);
+          });
+        }, 4000); // 4 soniya kechikish
       }).catch(err => {
-        resultText.innerText = "❌ Yutuqni hisoblashda xato!";
+        resultText.innerText = "❌ Garov tikishda xato!";
         resultText.style.color = "red";
-        console.error("Yutuqni hisoblashda xato:", err);
-      }).finally(() => {
+        console.error("Garov tikishda xato:", err);
         isSpinning = false;
         startButton.disabled = false;
-        console.log("Aylanish tugadi, isSpinning:", isSpinning);
       });
-    }, 4500);
-  }).catch(err => {
-    resultText.innerText = "❌ Garov tikishda xato!";
-    resultText.style.color = "red";
-    console.error("Garov tikishda xato:", err);
-    isSpinning = false;
-    startButton.disabled = false;
-  });
-}
+    }
 
-window.onload = () => {
-  console.log("Sahifa yuklandi, Telegram userId:", tg?.initDataUnsafe?.user?.id);
-  fetchUserData();
-};
-</script>
+    startButton.addEventListener('click', spinWheel);
 
+    window.onload = () => {
+      console.log("Sahifa yuklandi, Telegram userId:", tg?.initDataUnsafe?.user?.id);
+      fetchUserData();
+    };
+  </script>
 </body>
 </html>
