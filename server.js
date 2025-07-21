@@ -63,7 +63,6 @@
   
 
 
-  // Update Balance
   app.post('/api/update-balance', async (req, res) => {
     const { telegram_id, amount } = req.body;
     console.log(`So‘rov keldi: telegram_id=${telegram_id}, amount=${amount}`);
@@ -74,7 +73,6 @@
     }
 
     try {
-      // Foydalanuvchini olish
       const result = await pool.query(
         'SELECT coins FROM users WHERE telegram_id = $1',
         [telegram_id]

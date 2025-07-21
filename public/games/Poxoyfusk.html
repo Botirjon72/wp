@@ -229,216 +229,192 @@
   </div>
 
   <footer class="footer">REKLAMA</footer>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+  const userId = tg.initDataUnsafe?.user?.id;
+  let userBalance = 0;
 
-    const userId = tg.initDataUnsafe?.user?.id; // Eslatma: initDataUnsafe xavfsiz emas, serverda autentifikatsiya qiling!
-    let userBalance = 0;
+  const grid = document.getElementById('crystalGrid');
+  const startButton = document.getElementById('startButton');
+  const cashoutButton = document.getElementById('cashoutButton');
+  const customBetInput = document.getElementById('customBet');
+  const betButtons = document.querySelectorAll('.bet-btn');
+  const multiplierDisplay = document.getElementById('multiplier');
+  const currentWinDisplay = document.getElementById('currentWin');
 
-    async function fetchUserData() {
-      try {
-        const res = await fetch(`/api/user?telegram_id=${userId}`);
-        if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
-        const data = await res.json();
-        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-        document.getElementById('level').textContent = `Level: ${data.level || 0}`;
-        document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
-        document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'} | : ${data.score || 0}`;
-        document.getElementById('coins').textContent = `Tanga: ${data.coins|| 0}`;
-        userBalance = data.coins || 0;
-      } catch (err) {
-        console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
-        document.getElementById('name').textContent = 'Xatolik yuz berdi';
-        document.getElementById('avatar').src = './img/default.jpg';
-      }
+  const totalCrystals = 25;
+  const minesCount = 50;
+  let isGameActive = false;
+  let revealedCount = 0;
+  let selectedBet = 0;
+  let mineIndexes = new Set();
+
+  async function fetchUserData() {
+    try {
+      const res = await fetch(`/api/user?telegram_id=${userId}`);
+      if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+      const data = await res.json();
+      document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+      document.getElementById('level').textContent = `Level: ${data.level || 0}`;
+      document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+      document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'} | : ${data.score || 0}`;
+      document.getElementById('coins').textContent = `Tanga: ${data.coins || 0}`;
+      userBalance = data.coins || 0;
+    } catch (err) {
+      console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
+      document.getElementById('name').textContent = 'Xatolik yuz berdi';
+      document.getElementById('avatar').src = './img/default.jpg';
+    }
+  }
+
+  function renderGrid(disabled = true, mines = new Set()) {
+    grid.innerHTML = '';
+    for (let i = 0; i < totalCrystals; i++) {
+      const div = document.createElement('div');
+      div.classList.add('crystal');
+      div.dataset.index = i;
+      div.dataset.mine = mines.has(i) ? 'true' : 'false';
+      if (disabled) div.style.pointerEvents = 'none';
+      grid.appendChild(div);
+    }
+  }
+
+  function calculateMultiplier(revealed) {
+    return (1 + revealed * 0.2).toFixed(2);
+  }
+
+  function updateCurrentWin() {
+    const multiplier = parseFloat(calculateMultiplier(revealedCount));
+    const win = Math.round(selectedBet * multiplier);
+    currentWinDisplay.textContent = `Joriy yutuq: ${win} tanga`;
+  }
+
+  async function updateBalanceOnServer(amount) {
+    const res = await fetch('/api/update-balance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telegram_id: userId, amount })
+    });
+    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+    const data = await res.json();
+    if (typeof data.newScore !== 'number') throw new Error('Xatolik: noto‘g‘ri server javobi');
+    userBalance = data.newScore;
+    document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
+    return data.newScore;
+  }
+
+  async function startGame() {
+    const bet = parseInt(customBetInput.value);
+    if (isNaN(bet) || bet < 300) return alert('300 tangadan kam bo‘lmasin!');
+    if (bet > userBalance) return alert('Yetarli tanga yo‘q!');
+
+    selectedBet = bet;
+
+    try {
+      await updateBalanceOnServer(-selectedBet);
+    } catch (err) {
+      console.error(err);
+      return alert('Garov tikishda xatolik: ' + err.message);
     }
 
-    const grid = document.getElementById('crystalGrid');
-    const startButton = document.getElementById('startButton');
-    const cashoutButton = document.getElementById('cashoutButton');
-    const customBetInput = document.getElementById('customBet');
-    const betButtons = document.querySelectorAll('.bet-btn');
-    const multiplierDisplay = document.getElementById('multiplier');
-    const currentWinDisplay = document.getElementById('currentWin');
-
-    const total = 25;
-    const minesCount = 50; // 80% yutqazish ehtimoli
-    let isGameActive = false;
-    let revealedCount = 0;
-    let selectedBet = 0;
-    let mineIndexes = new Set();
-
-    function renderGrid(disabled = true, mines = new Set()) {
-      grid.innerHTML = '';
-      for (let i = 0; i < total; i++) {
-        const div = document.createElement('div');
-        div.classList.add('crystal');
-        div.dataset.index = i;
-        div.dataset.mine = mines.has(i) ? 'true' : 'false';
-        if (disabled) div.style.pointerEvents = 'none';
-        grid.appendChild(div);
-      }
+    mineIndexes.clear();
+    while (mineIndexes.size < minesCount) {
+      mineIndexes.add(Math.floor(Math.random() * totalCrystals));
     }
 
-    function calculateMultiplier(revealed) {
-      return (1 + revealed * 0.2).toFixed(2);
-    }
+    isGameActive = true;
+    revealedCount = 0;
+    cashoutButton.disabled = false;
 
-    function updateCurrentWin() {
-      const multiplier = parseFloat(calculateMultiplier(revealedCount));
-      const currentWin = Math.round(selectedBet * multiplier);
-      currentWinDisplay.textContent = `Joriy yutuq: ${currentWin} tanga`;
-    }
+    renderGrid(false, mineIndexes);
+    updateCurrentWin();
 
-    async function startGame() {
-      const val = parseInt(customBetInput.value);
-      if (isNaN(val) || val < 300) {
-        alert('Iltimos, 300 tangadan kam bo‘lmagan garov miqdorini kiriting!');
-        return;
-      }
+    document.querySelectorAll('.crystal').forEach(div => {
+      div.addEventListener('click', () => handleCrystalClick(div));
+    });
+  }
 
-      if (val > userBalance) {
-        alert('Mablag‘ yetmaydi!');
-        return;
-      }
+  function handleCrystalClick(div) {
+    if (!isGameActive || div.classList.contains('revealed')) return;
 
-      selectedBet = val;
-
-      try {
-        const res = await fetch('/api/update-balance', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegram_id: userId, amount: -selectedBet })
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
-        }
-        const data = await res.json();
-        if (typeof data.newScore !== 'number') {
-          throw new Error('Serverdan noto‘g‘ri javob keldi');
-        }
-        userBalance = data.newScore;
-        document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
-      } catch (err) {
-        console.error('StartGame xatosi:', err);
-        alert(`Garov tikishda xatolik: ${err.message}`);
-        return;
-      }
-
-      mineIndexes.clear();
-      while (mineIndexes.size < minesCount) {
-        mineIndexes.add(Math.floor(Math.random() * total));
-      }
-
-      isGameActive = true;
-      revealedCount = 0;
-      cashoutButton.disabled = false;
-      renderGrid(false, mineIndexes);
-      updateCurrentWin();
-
-      const crystals = document.querySelectorAll('.crystal');
-      crystals.forEach(div => {
-        div.addEventListener('click', () => {
-          if (!isGameActive || div.classList.contains('revealed')) return;
-
-          div.classList.add('revealed');
-          if (div.dataset.mine === 'true') {
-            div.classList.add('mine');
-            div.textContent = '💣';
-            isGameActive = false;
-            cashoutButton.disabled = true;
-            setTimeout(() => {
-              alert('💥 Siz mina bosdingiz. O\'yin tugadi.');
-              resetGame();
-            }, 300);
-          } else {
-            div.classList.add('yutuq');
-            div.textContent = '🪙';
-            revealedCount++;
-            const currentMultiplier = calculateMultiplier(revealedCount);
-            multiplierDisplay.textContent = `Ko‘paytiruvchi: ${currentMultiplier}x`;
-            updateCurrentWin();
-          }
-        });
-      });
-    }
-
-    async function garovniOlish() {
-      if (!isGameActive) return;
-
+    div.classList.add('revealed');
+    if (div.dataset.mine === 'true') {
+      div.classList.add('mine');
+      div.textContent = '💣';
       isGameActive = false;
       cashoutButton.disabled = true;
-
-      const multiplier = parseFloat(calculateMultiplier(revealedCount));
-      const bonus = Math.round(selectedBet * multiplier);
-
-      try {
-        const res = await fetch('/api/update-balance', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegram_id: userId, amount: bonus })
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
-        }
-        const data = await res.json();
-        if (typeof data.newScore !== 'number') {
-          throw new Error('Serverdan noto‘g‘ri javob keldi');
-        }
-        userBalance = data.newScore;
-        document.getElementById('coins').textContent = `Tanga: ${data.newScore}`;
-        alert(`🎉 Siz ${revealedCount} ta kristal ochdingiz. Ko‘paytiruvchi: ${multiplier}x. Mukofot: ${bonus} tanga`);
-      } catch (err) {
-        console.error('GarovniOlish xatosi:', err);
-        alert(`Yutuq hisobga qo‘shilmadi: ${err.message}`);
-      } finally {
+      setTimeout(() => {
+        alert('💥 Mina bosildi. O\'yin tugadi.');
         resetGame();
-      }
+      }, 300);
+    } else {
+      div.classList.add('yutuq');
+      div.textContent = '🪙';
+      revealedCount++;
+      const mult = calculateMultiplier(revealedCount);
+      multiplierDisplay.textContent = `Ko‘paytiruvchi: ${mult}x`;
+      updateCurrentWin();
     }
+  }
 
-    function resetGame() {
-      renderGrid(true);
-      isGameActive = false;
-      cashoutButton.disabled = true;
+  async function garovniOlish() {
+    if (!isGameActive) return;
+    isGameActive = false;
+    cashoutButton.disabled = true;
+
+    const multiplier = parseFloat(calculateMultiplier(revealedCount));
+    const bonus = Math.round(selectedBet * multiplier);
+
+    try {
+      await updateBalanceOnServer(bonus);
+      alert(`🎉 ${revealedCount} ta kristal! Ko‘paytiruvchi: ${multiplier}x. Mukofot: ${bonus} tanga`);
+    } catch (err) {
+      console.error(err);
+      alert('Yutuq hisoblanmadi: ' + err.message);
+    } finally {
+      resetGame();
+    }
+  }
+
+  function resetGame() {
+    renderGrid(true);
+    isGameActive = false;
+    cashoutButton.disabled = true;
+    selectedBet = 0;
+    revealedCount = 0;
+    multiplierDisplay.textContent = 'Ko‘paytiruvchi: 1.0x';
+    currentWinDisplay.textContent = 'Joriy yutuq: 0 tanga';
+  }
+
+  betButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const amount = parseInt(btn.dataset.amount);
+      if (!isNaN(amount) && amount >= 100) {
+        selectedBet = amount;
+        customBetInput.value = amount;
+      }
+    });
+  });
+
+  customBetInput.addEventListener('input', () => {
+    const val = parseInt(customBetInput.value);
+    if (!isNaN(val) && val >= 100) {
+      selectedBet = val;
+    } else {
       selectedBet = 0;
-      revealedCount = 0;
-      multiplierDisplay.textContent = 'Ko‘paytiruvchi: 1.0x';
-      currentWinDisplay.textContent = 'Joriy yutuq: 0 tanga';
     }
+  });
 
-    betButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const amount = parseInt(btn.dataset.amount);
-        if (!isNaN(amount) && amount >= 100) {
-          selectedBet = amount;
-          customBetInput.value = amount;
-        }
-      });
-    });
+  startButton.addEventListener('click', startGame);
+  cashoutButton.addEventListener('click', garovniOlish);
+  window.onload = () => {
+    fetchUserData();
+    renderGrid(true);
+  };
+</script>
 
-    customBetInput.addEventListener('input', () => {
-      const val = parseInt(customBetInput.value);
-      if (!isNaN(val) && val >= 100) {
-        selectedBet = val;
-      } else {
-        customBetInput.value = '';
-        selectedBet = 0;
-      }
-    });
-
-    startButton.addEventListener('click', startGame);
-    cashoutButton.addEventListener('click', garovniOlish);
-    window.onload = () => {
-      fetchUserData();
-      renderGrid(true);
-    };
-  </script>
 </body>
 </html>
