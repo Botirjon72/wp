@@ -406,7 +406,10 @@
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-  function shuffle(array) {
+ const tg = window.Telegram.WebApp;
+tg.expand();
+
+function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -433,108 +436,168 @@ const weightedValues = [
 ];
 
 const values = shuffle(weightedValues);
+const wheel = document.getElementById("wheel");
+const dynamicPointer = document.getElementById("dynamicPointer");
+const resultText = document.getElementById("result");
+const startButton = document.getElementById("startButton");
+const customBetInput = document.getElementById("customBet");
+let userCoins = 0;
+let isSpinning = false;
 
-  const wheel = document.getElementById("wheel");
-  const dynamicPointer = document.getElementById("dynamicPointer");
-  let userCoins = 0;
+values.forEach((val, i) => {
+  const span = document.createElement("span");
+  const angle = (360 / values.length) * i + (360 / values.length) / 2;
+  span.innerText = val;
+  span.style.setProperty('--angle', `${angle}deg`);
+  if (parseFloat(val.replace("x", "").replace("K", "000")) >= 1000) span.classList.add("large-text");
+  wheel.appendChild(span);
+});
 
-  values.forEach((val, i) => {
-    const span = document.createElement("span");
-    const angle = (360 / values.length) * i + (360 / values.length) / 2;
-    span.innerText = val;
-    span.style.setProperty('--angle', `${angle}deg`);
-    if (parseFloat(val.replace("x", "")) >= 1000) span.classList.add("large-text");
-    wheel.appendChild(span);
-  });
+async function fetchUserData() {
+  const userId = tg?.initDataUnsafe?.user?.id;
+  console.log("Foydalanuvchi ma'lumotlari yuklanmoqda, userId:", userId);
+  try {
+    const res = await fetch(`/api/user?telegram_id=${userId}`);
+    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+    const data = await res.json();
+    document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
+    document.getElementById('level').textContent = `Level: ${data.level || 0}`;
+    document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+    document.getElementById('rank').textContent = `Rank: ${data.rank || 'N/A'}`;
+    document.getElementById('coins').textContent = `Tanga: ${data.coins || 0}`;
+    userCoins = data.coins || 0;
+    document.getElementById('avatar').src = data.avatar || './img/default.jpg';
+    console.log("Foydalanuvchi ma'lumotlari yuklandi:", data);
+  } catch (err) {
+    console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
+    document.getElementById('name').textContent = 'Yuklanmadi';
+    document.getElementById('coins').textContent = 'Tanga: 0';
+  }
+}
 
-  document.querySelectorAll('.bet-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const label = btn.textContent.trim();
-      let amount = 300; 
-      switch (true) {
-        case label.includes('Min'):
-          amount = 300;
-          break;
-        case label.includes('Max'):
-          amount = Math.min(userCoins, 3000);
-          break;
-        case label.includes('2x'):
-          amount = Math.min(300 * 2, 3000);
-          break;
-        case label.includes('5x'):
-          amount = Math.min(3000);
-          break;
-        default:
-          amount = parseInt(btn.dataset.amount) || 300;
-      }
-      document.getElementById('customBet').value = amount;
+async function updateBalance(amount) {
+  const userId = tg?.initDataUnsafe?.user?.id;
+  console.log("Balans yangilash so'rovi, amount:", amount);
+  try {
+    const res = await fetch('/api/update-balance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telegram_id: userId, amount })
     });
-  });
+    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+    const data = await res.json();
+    if (typeof data.newScore !== 'number') throw new Error('Noto‘g‘ri server javobi');
+    userCoins = data.newScore;
+    document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
+    console.log("Balans yangilandi:", userCoins);
+    return userCoins;
+  } catch (err) {
+    console.error("Balans yangilashda xato:", err);
+    throw err;
+  }
+}
 
-  let rotation = 0;
-  function spinWheel() {
-  const resultText = document.getElementById("result");
-  const bet = parseInt(document.getElementById("customBet").value);
+document.querySelectorAll('.bet-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const label = btn.textContent.trim();
+    let amount = 300;
+    switch (true) {
+      case label.includes('Min'):
+        amount = 300;
+        break;
+      case label.includes('Max'):
+        amount = Math.min(userCoins, 3000);
+        break;
+      case label.includes('2x'):
+        amount = Math.min(300 * 2, 3000);
+        break;
+      case label.includes('5x'):
+        amount = Math.min(3000, userCoins);
+        break;
+      default:
+        amount = parseInt(btn.dataset.amount) || 300;
+    }
+    customBetInput.value = amount;
+    console.log("Garov tanlandi:", amount);
+  });
+});
+
+let rotation = 0;
+function spinWheel() {
+  if (isSpinning) {
+    console.log("Ruletka allaqachon aylanmoqda!");
+    return;
+  }
+
+  const bet = parseInt(customBetInput.value);
+  console.log("Garov tikish boshlandi, bet:", bet);
 
   if (!bet || bet < 300 || bet > 3000) {
     resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
     resultText.style.color = "orange";
+    console.log("Xato: Noto'g'ri garov miqdori:", bet);
     return;
   }
 
   if (bet > userCoins) {
     resultText.innerText = "❌ Tangalaringiz yetarli emas!";
     resultText.style.color = "red";
+    console.log("Xato: Yetarli tanga yo'q, balans:", userCoins);
     return;
   }
 
-  // Spinning logic
-  const randomIndex = Math.floor(Math.random() * values.length);
-  const anglePerSlice = 360 / values.length;
-  const targetAngle = 360 - (randomIndex * anglePerSlice);
-  rotation += 360 * 5 + targetAngle;
-  wheel.style.transform = `rotate(${rotation}deg)`;
+  isSpinning = true;
+  startButton.disabled = true;
 
-  setTimeout(() => {
-    const normalizedRotation = (rotation % 360 + 360) % 360;
-    const indexFromTop = Math.floor(normalizedRotation / anglePerSlice) % values.length;
-    const selectedValue = values[(values.length - indexFromTop) % values.length];
-    const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
-    const winAmount = Math.floor(multiplier * bet);
-
-    userCoins -= bet;
-    userCoins += winAmount;
-
-    document.getElementById("coins").textContent = `Tanga: ${userCoins}`;
-    resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
-    resultText.style.color = "#00ff00";
-
-    dynamicPointer.style.display = "block";
-    dynamicPointer.innerText = `Yutuq: ${winAmount}`;
-    dynamicPointer.style.transform = `translate(-50%, -50%)`;
+  updateBalance(-bet).then(() => {
+    const randomIndex = Math.floor(Math.random() * values.length);
+    const anglePerSlice = 360 / values.length;
+    const targetAngle = 360 - (randomIndex * anglePerSlice);
+    rotation += 360 * 5 + targetAngle;
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    console.log("Ruletka aylandi, rotation:", rotation, "targetIndex:", randomIndex);
 
     setTimeout(() => {
-      dynamicPointer.style.display = "none";
-    }, 5000);
-  }, 4500);
+      const normalizedRotation = (rotation % 360 + 360) % 360;
+      const indexFromTop = Math.floor(normalizedRotation / anglePerSlice) % values.length;
+      const selectedValue = values[(values.length - indexFromTop) % values.length];
+      const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
+      const winAmount = Math.floor(multiplier * bet);
 
+      updateBalance(winAmount).then(() => {
+        resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
+        resultText.style.color = "#00ff00";
+        dynamicPointer.style.display = "block";
+        dynamicPointer.innerText = `Yutuq: ${winAmount}`;
+        dynamicPointer.style.transform = `translate(-50%, -50%)`;
+        console.log("Yutuq hisoblandi:", { selectedValue, winAmount });
+
+        setTimeout(() => {
+          dynamicPointer.style.display = "none";
+        }, 5000);
+      }).catch(err => {
+        resultText.innerText = "❌ Yutuqni hisoblashda xato!";
+        resultText.style.color = "red";
+        console.error("Yutuqni hisoblashda xato:", err);
+      }).finally(() => {
+        isSpinning = false;
+        startButton.disabled = false;
+        console.log("Aylanish tugadi, isSpinning:", isSpinning);
+      });
+    }, 4500);
+  }).catch(err => {
+    resultText.innerText = "❌ Garov tikishda xato!";
+    resultText.style.color = "red";
+    console.error("Garov tikishda xato:", err);
+    isSpinning = false;
+    startButton.disabled = false;
+  });
 }
 
-  const userId = tg?.initDataUnsafe?.user?.id;
-  fetch(`/api/user?telegram_id=${userId}`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('name').textContent = data.name || 'Foydalanuvchi';
-      document.getElementById('level').textContent = `Level: ${data.level}`;
-      document.getElementById('xp').textContent = `XP: ${data.xp}`;
-      document.getElementById('rank').textContent = `Rank: ${data.rank}`;
-      document.getElementById('coins').textContent = `Tanga: ${userCoins}`;
-      userCoins = data.coins || 0;
-      document.getElementById('avatar').src = data.avatar || './img/default.jpg';
-    })
-    .catch(() => {
-      document.getElementById('name').textContent = 'Yuklanmadi';
-});
+window.onload = () => {
+  console.log("Sahifa yuklandi, Telegram userId:", tg?.initDataUnsafe?.user?.id);
+  fetchUserData();
+};
 </script>
 
 </body>
