@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Collectibles Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #2c3e50;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #34495e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: #2c3e50;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .balance {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: #3d566e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid #4a6741;
+        }
+
+        .coin-icon {
+            width: 24px;
+            height: 24px;
+            background: url('/public/nft/coin.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .category {
+            padding: 8px 12px;
+            background: #3d566e;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #4a6741;
+        }
+
+        .category.active {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1e3c72;
+        }
+
+        .category:hover {
+            background: #4a6741;
+        }
+
+        .grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #ffd700 #3d566e;
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        .grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .grid::-webkit-scrollbar-track {
+            background: #3d566e;
+            border-radius: 10px;
+            border: 1px solid #4a6741;
+        }
+
+        .grid::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 10px;
+            border: 1px solid #1e3c72;
+        }
+
+        .grid::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ffed4e, #ffd700);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .grid::-webkit-scrollbar-corner {
+            background: #3d566e;
+        }
+
+        .nft-item {
+            background: #3d566e;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #4a6741;
+        }
+
+        .nft-item:hover {
+            transform: translateY(-5px);
+            background: #4a6741;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .nft-item.purchased {
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid #22c55e;
+        }
+
+        .nft-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .gift-1 { background-image: url('/public/nft/1.png'); }
+        .gift-2 { background-image: url('/public/nft/2.png'); }
+        .gift-3 { background-image: url('/public/nft/3.png'); }
+        .gift-4 { background-image: url('/public/nft/4.png'); }
+        .gift-5 { background-image: url('/public/nft/5.png'); }
+        .gift-6 { background-image: url('/public/nft/6.png'); }
+        .gift-7 { background-image: url('/public/nft/7.png'); }
+        .gift-8 { background-image: url('/public/nft/8.png'); }
+        .gift-9 { background-image: url('/public/nft/9.png'); }
+        .gift-10 { background-image: url('/public/nft/10.png'); }
+        .gift-11 { background-image: url('/public/nft/11.png'); }
+        .gift-12 { background-image: url('/public/nft/12.png'); }
+        .gift-13 { background-image: url('/public/nft/13.png'); }
+        .gift-14 { background-image: url('/public/nft/14.png'); }
+        .gift-15 { background-image: url('/public/nft/15.png'); }
+        .gift-16 { background-image: url('/public/nft/16.png'); }
+        .gift-17 { background-image: url('/public/nft/17.png'); }
+        .gift-18 { background-image: url('/public/nft/18.png'); }
+
+        .nft-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+            font-weight: bold;
+            color: #ffd700;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .nft-value:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .nft-value.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #6b7280;
+            color: #6b7280;
+        }
+
+        .nft-value.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .coin-price {
+            width: 24px;
+            height: 24px;
+            background: url('images/coin.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin-right: 8px;
+        }
+
+        .purchased-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #22c55e;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .buy-button {
+            display: none;
+        }
+
+        .collection-section {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: #2c3e50;
+            display: none;
+        }
+
+        .collection-section.active {
+            display: block;
+        }
+
+        .collection-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #ffd700;
+        }
+
+        .empty-collection {
+            text-align: center;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="balance">
+                <div class="coin-icon"></div>
+                <span id="coinBalance">500</span>
+                <span style="margin-left: 5px;">Coins</span>
+            </div>
+            <h1>Gift Shop</h1>
+            
+            
+            <div class="categories">
+                <div class="category active" onclick="showSection('shop')">Do'kon</div>
+                <div class="category" onclick="showSection('collection')">Kolleksiya</div>
+                <div class="category" onclick="showSection('send')">Yuborish</div>
+            </div>
+        </div>
+
+        <div id="shop-section" class="grid">
+            <div class="nft-item" data-id="gift-1" data-price="10">
+                <div class="nft-icon gift-1"></div>
+                <div class="nft-value" onclick="buyGift('gift-1', 10)">
+                    <div class="coin-price"></div>
+                    <span>10</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-2" data-price="10">
+                <div class="nft-icon gift-2"></div>
+                <div class="nft-value" onclick="buyGift('gift-2', 10)">
+                    <div class="coin-price"></div>
+                    <span>10</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-3" data-price="15">
+                <div class="nft-icon gift-3"></div>
+                <div class="nft-value" onclick="buyGift('gift-3', 15)">
+                    <div class="coin-price"></div>
+                    <span>15</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-4" data-price="15">
+                <div class="nft-icon gift-4"></div>
+                <div class="nft-value" onclick="buyGift('gift-4', 15)">
+                    <div class="coin-price"></div>
+                    <span>15</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-5" data-price="20">
+                <div class="nft-icon gift-5"></div>
+                <div class="nft-value" onclick="buyGift('gift-5', 20)">
+                    <div class="coin-price"></div>
+                    <span>20</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-6" data-price="20">
+                <div class="nft-icon gift-6"></div>
+                <div class="nft-value" onclick="buyGift('gift-6', 20)">
+                    <div class="coin-price"></div>
+                    <span>20</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-7" data-price="25">
+                <div class="nft-icon gift-7"></div>
+                <div class="nft-value" onclick="buyGift('gift-7', 25)">
+                    <div class="coin-price"></div>
+                    <span>25</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-8" data-price="25">
+                <div class="nft-icon gift-8"></div>
+                <div class="nft-value" onclick="buyGift('gift-8', 25)">
+                    <div class="coin-price"></div>
+                    <span>25</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-9" data-price="30">
+                <div class="nft-icon gift-9"></div>
+                <div class="nft-value" onclick="buyGift('gift-9', 30)">
+                    <div class="coin-price"></div>
+                    <span>30</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-10" data-price="30">
+                <div class="nft-icon gift-10"></div>
+                <div class="nft-value" onclick="buyGift('gift-10', 30)">
+                    <div class="coin-price"></div>
+                    <span>30</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-11" data-price="40">
+                <div class="nft-icon gift-11"></div>
+                <div class="nft-value" onclick="buyGift('gift-11', 40)">
+                    <div class="coin-price"></div>
+                    <span>40</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-12" data-price="40">
+                <div class="nft-icon gift-12"></div>
+                <div class="nft-value" onclick="buyGift('gift-12', 40)">
+                    <div class="coin-price"></div>
+                    <span>40</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-13" data-price="50">
+                <div class="nft-icon gift-13"></div>
+                <div class="nft-value" onclick="buyGift('gift-13', 50)">
+                    <div class="coin-price"></div>
+                    <span>50</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-14" data-price="50">
+                <div class="nft-icon gift-14"></div>
+                <div class="nft-value" onclick="buyGift('gift-14', 50)">
+                    <div class="coin-price"></div>
+                    <span>50</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-15" data-price="60">
+                <div class="nft-icon gift-15"></div>
+                <div class="nft-value" onclick="buyGift('gift-15', 60)">
+                    <div class="coin-price"></div>
+                    <span>60</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-16" data-price="60">
+                <div class="nft-icon gift-16"></div>
+                <div class="nft-value" onclick="buyGift('gift-16', 60)">
+                    <div class="coin-price"></div>
+                    <span>60</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-17" data-price="80">
+                <div class="nft-icon gift-17"></div>
+                <div class="nft-value" onclick="buyGift('gift-17', 80)">
+                    <div class="coin-price"></div>
+                    <span>80</span>
+                </div>
+            </div>
+
+            <div class="nft-item" data-id="gift-18" data-price="100">
+                <div class="nft-icon gift-18"></div>
+                <div class="nft-value" onclick="buyGift('gift-18', 100)">
+                    <div class="coin-price"></div>
+                    <span>100</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="collection-section" class="collection-section">
+            <h2 class="collection-title">Mening Kolleksiyam</h2>
+            <div id="collection-grid" class="grid">
+                <div class="empty-collection">
+                    Hali hech qanday sovg'a sotib olmadingiz
+                </div>
+            </div>
+        </div>
+
+        <div id="send-section" class="collection-section">
+            <h2 class="collection-title">Hadya yuborish</h2>
+            <div class="empty-collection">
+                Bu bo'lim hozircha mavjud emas
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+    let coinBalance = 0;
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id; // foydalanuvchi idsi
+
+    let purchasedGifts = {};
+
+    // LocalStorage ga saqlash
+    function savePurchasedGifts() {
+        localStorage.setItem('purchasedGifts', JSON.stringify(purchasedGifts));
+    }
+
+    // LocalStorage dan o'qish
+    function loadPurchasedGifts() {
+        const saved = localStorage.getItem('purchasedGifts');
+        if (saved) {
+            purchasedGifts = JSON.parse(saved);
+        }
+    }
+
+    // Foydalanuvchi coin balansini yangilash
+    function updateBalance() {
+        document.getElementById('coinBalance').textContent = coinBalance;
+    }
+
+    // Bildirishnoma ko'rsatish
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+
+    // Sovg'a sotib olish funksiyasi
+    function buyGift(giftId, price) {
+        if (coinBalance >= price) {
+            coinBalance -= price;
+            updateBalance();
+
+            if (purchasedGifts[giftId]) {
+                purchasedGifts[giftId]++;
+            } else {
+                purchasedGifts[giftId] = 1;
+            }
+
+            savePurchasedGifts();  // sotib olgandan keyin saqlaymiz
+            showNotification(`🎁 Sovg'a muvaffaqiyatli sotib olindi! (-${price} coins)`);
+            updateShopDisplay();
+            updateCollection();
+        } else {
+            showNotification('❌ Yetarli coinlaringiz yo\'q!');
+        }
+    }
+
+    // Do'kon ko'rinishini yangilash (sotib olish uchun coin yetarliligini ko'rsatish)
+    function updateShopDisplay() {
+        const priceDisplays = document.querySelectorAll('.nft-value');
+        priceDisplays.forEach(priceDisplay => {
+            const item = priceDisplay.closest('.nft-item');
+            const price = parseInt(item.dataset.price);
+
+            if (coinBalance < price) {
+                priceDisplay.classList.add('disabled');
+            } else {
+                priceDisplay.classList.remove('disabled');
+            }
+        });
+    }
+
+    // Kolleksiyani yangilash (sotib olingan sovg'alarni ko'rsatish)
+    function updateCollection() {
+        const collectionGrid = document.getElementById('collection-grid');
+
+        if (Object.keys(purchasedGifts).length === 0) {
+            collectionGrid.innerHTML = '<div class="empty-collection">Hali hech qanday sovg\'a sotib olmadingiz</div>';
+            return;
+        }
+
+        let html = '';
+        for (const [giftId, count] of Object.entries(purchasedGifts)) {
+            html += `
+                <div class="nft-item purchased">
+                    <div class="purchased-badge">x${count}</div>
+                    <div class="nft-icon ${giftId}"></div>
+                    <div style="margin-top: 10px; font-size: 12px;">Egalik qilasiz</div>
+                </div>
+            `;
+        }
+        collectionGrid.innerHTML = html;
+    }
+
+    // Bo'limlarni ko'rsatish funksiyasi
+    function showSection(section) {
+        document.querySelectorAll('.category').forEach(cat => cat.classList.remove('active'));
+        event.target.classList.add('active');
+
+        document.getElementById('shop-section').style.display = section === 'shop' ? 'grid' : 'none';
+        document.getElementById('collection-section').classList.toggle('active', section === 'collection');
+        document.getElementById('send-section').classList.toggle('active', section === 'send');
+    }
+
+    // Foydalanuvchi coin balansini API orqali olish va lokal ma'lumotlarni yuklash
+    if (!userId) {
+        // foydalanuvchi topilmadi yoki anonim
+        showNotification('Foydalanuvchi topilmadi');
+    } else {
+        fetch(`/api/user?telegram_id=${userId}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+                return res.json();
+            })
+            .then(data => {
+                coinBalance = data.coins;
+                updateBalance();
+
+                loadPurchasedGifts();  // localStorage dan ma'lumotlarni o'qib olamiz
+                updateCollection();
+                updateShopDisplay();
+            })
+            .catch(err => {
+                console.error(err);
+                showNotification('Xatolik yuz berdi');
+            });
+    }
+</script>
+
+</body>
+</html>
