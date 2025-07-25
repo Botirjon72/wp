@@ -341,8 +341,9 @@
         document.getElementById('coins').textContent = `Tanga: ${userData.coins}`;
         document.getElementById('avatar').src = userData.avatar;
         localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+        console.log("Foydalanuvchi ma'lumotlari yuklandi:", userData);
       } catch (err) {
-        console.error(err);
+        console.error('Foydalanuvchi maʼlumotlari xatosi:', err);
         document.getElementById('name').textContent = 'Xatolik!';
         document.getElementById('avatar').src = './img/default.jpg';
         showNotification('❌ Ma\'lumotlarni yuklashda xato yuz berdi!', 'error');
@@ -351,12 +352,13 @@
 
     // Balansni serverda yangilash
     async function updateBalanceOnServer(amount) {
+      const userId = tg?.initDataUnsafe?.user?.id;
       console.log("Balans yangilash so'rovi:", amount);
       try {
         const res = await fetch('/api/update-balance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegram_id: tg?.initDataUnsafe?.user?.id, amount })
+          body: JSON.stringify({ telegram_id: userId, amount })
         });
         if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
         const data = await res.json();
@@ -442,9 +444,11 @@
         flash.className = 'flash';
         document.body.appendChild(flash);
         setTimeout(() => flash.remove(), 1000);
+        showNotification(msg, 'success');
       } else {
         resultDisplay.style.color = '#ff4444';
         resultDisplay.classList.add('lose-animation');
+        showNotification(msg, 'error');
       }
     }
 
@@ -466,7 +470,7 @@
         return;
       }
 
-      // Balansni mahalliy ravishda kamaytirish
+      // Balansdan stavkani ayrib tashlash
       balance -= bet;
       updateUserBalance(balance);
 
@@ -475,6 +479,7 @@
         await updateBalanceOnServer(balance);
       } catch (err) {
         showMessage("❌ Server bilan bog‘lanishda xato!");
+        updateUserBalance(balance + bet); // Xato bo‘lsa, stavkani qaytarish
         return;
       }
 
@@ -538,13 +543,14 @@
             showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
           } catch (err) {
             showMessage("❌ Server bilan bog‘lanishda xato!");
+            updateUserBalance(balance - win); // Xato bo‘lsa, yutuqni qaytarish
           }
         } else {
           // Yutqazish ovozini ijro etish
           loseSound.currentTime = 0;
           loseSound.play();
 
-          showMessage("😢 Yutqazdingiz. Omad keyingisida!", 'error');
+          showMessage(`😢 Yutqazdingiz. -${bet} tanga. Omad keyingisida!`, 'error');
         }
         btn.disabled = false;
       }, Math.max(t1, t2, t3) + 200);
