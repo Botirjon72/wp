@@ -579,38 +579,41 @@ footer {
     🚀 CYBERPUNK DASHBOARD - KELAJAK ENDI BOSHLANDI!
   </footer>
 
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-// Telegram WebApp integratsiyasi
 const tg = window.Telegram?.WebApp;
 const userId = tg.initDataUnsafe?.user?.id;
 
 function loadUser() {
-
+  const tg = window.Telegram?.WebApp;
+  const userId = tg?.initDataUnsafe?.user?.id;
 
   if (!userId) {
     document.getElementById('name').textContent = 'Telegram ID topilmadi!';
     document.getElementById('avatar').src = './img/default.jpg';
-  } else {
-    fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
-      .then(res => {
-        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-        document.getElementById('level').textContent = `Level: ${data.level}`;
-        document.getElementById('xp').textContent = `XP: ${data.xp}`;
-        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
-        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
-        document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('name').textContent = 'Xatolik!';
-      });
+    return;
   }
-  }
-// Lokal storage kalitlari
+
+  fetch(`/api/user?telegram_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+      return res.json();
+    })
+    .then(data => {
+      document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+      document.getElementById('level').textContent = `Level: ${data.level}`;
+      document.getElementById('xp').textContent = `XP: ${data.xp}`;
+      document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+      document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+      document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('name').textContent = 'Xatolik!';
+      document.getElementById('avatar').src = './img/default.jpg';
+    });
+}
+
 const STORAGE_KEYS = {
   USER_DATA: 'cyberpunk_user_data',
   TASKS: 'cyberpunk_tasks',
@@ -639,20 +642,8 @@ function showNotification(message, type = 'success') {
   }, 3000);
 }
 
-// Foydalanuvchi ma'lumotlarini yuklash
+  
 
-  
-  // UI yangilash
-  document.getElementById('name').textContent = userData.name;
-  document.getElementById('level').textContent = `Level: ${userData.level}`;
-  document.getElementById('xp').textContent = `XP: ${userData.xp}`;
-  document.getElementById('rank').textContent = `Rank: ${userData.rank} | Score: ${userData.score}`;
-  document.getElementById('coins').textContent = `💰 Tanga: ${userData.coins.toLocaleString()}`;
-  
-  if (userData.avatar) {
-    document.getElementById('avatar').src = userData.avatar;
-  }
-}
 
 // Foydalanuvchi ma'lumotlarini saqlash
 function saveUserData(updates) {
@@ -664,6 +655,8 @@ function saveUserData(updates) {
   
   loadUser(); // UI ni yangilash
 }
+
+
 
 // Kundalik vazifalar
 let tasks = [
