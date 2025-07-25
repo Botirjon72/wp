@@ -296,26 +296,26 @@ function updateCurrentWin() {
   currentWinDisplay.textContent = `Joriy yutuq: ${win} tanga`;
 }
 
-async function updateBalanceOnServer(amount) {
-  console.log("Balans yangilash so'rovi:", amount);
-  try {
-    const res = await fetch('/api/update-balance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telegram_id: userId, amount })
-    });
-    if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
-    const data = await res.json();
-    if (typeof data.newScore !== 'number') throw new Error('Xatolik: noto‘g‘ri server javobi');
-    userBalance = data.newScore;
-    document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
-    console.log("Balans yangilandi:", userBalance);
-    return data.newScore;
-  } catch (err) {
-    console.error("Balans yangilashda xato:", err);
-    throw err;
+  async function updateBalanceOnServer(amount) {
+    console.log("Balans yangilash so'rovi:", amount);
+    try {
+      const res = await fetch('/api/update-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegram_id: userId, amount })
+      });
+      if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+      const data = await res.json();
+      if (typeof data.newScore !== 'number') throw new Error('Xatolik: noto‘g‘ri server javobi');
+      userBalance = data.newScore;
+      document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
+      console.log("Balans yangilandi:", userBalance);
+      return data.newScore;
+    } catch (err) {
+      console.error("Balans yangilashda xato:", err);
+      throw err;
+    }
   }
-}
 
 async function startGame() {
   const bet = parseInt(customBetInput.value);

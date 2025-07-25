@@ -171,44 +171,63 @@
       z-index: 3;
       backdrop-filter: blur(5px);
     }
-     /* Yutish effekti uchun */
-  .win-animation {
-    animation: winPulse 0.5s ease-in-out 6;
-  }
-  @keyframes winPulse {
-    0% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
-    50% { transform: scale(1.2); text-shadow: 0 0 20px #fff700; }
-    100% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
-  }
-
-  /* Yutqazish effekti uchun */
-  .lose-animation {
-    animation: shake 0.5s ease-in-out 2;
-  }
-  @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
-  }
-
-  /* Ekran yutishda porlash effekti */
-  .flash {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, rgba(255,255,0,0.4), transparent);
-    z-index: 999;
-    pointer-events: none;
-    animation: flashFade 1s ease-out forwards;
-  }
-
-  @keyframes flashFade {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
+    /* Yutish effekti uchun */
+    .win-animation {
+      animation: winPulse 0.5s ease-in-out 6;
+    }
+    @keyframes winPulse {
+      0% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
+      50% { transform: scale(1.2); text-shadow: 0 0 20px #fff700; }
+      100% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
+    }
+    /* Yutqazish effekti uchun */
+    .lose-animation {
+      animation: shake 0.5s ease-in-out 2;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+    /* Ekran yutishda porlash effekti */
+    .flash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(255,255,0,0.4), transparent);
+      z-index: 999;
+      pointer-events: none;
+      animation: flashFade 1s ease-out forwards;
+    }
+    @keyframes flashFade {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    /* Notification effekti */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #0ff, #0f0);
+      color: #000;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: 600;
+      z-index: 2000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+    }
+    .notification.show {
+      transform: translateX(0);
+    }
+    .notification.error {
+      background: linear-gradient(135deg, #ff4444, #ff6666);
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -217,7 +236,7 @@
       <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
       <div>
         <h3 id="name">Yuklanmoqda...</h3>
-        <p id="level">--</p> <!-- Qo‘shildi -->
+        <p id="level">--</p>
         <p id="xp">--</p>
       </div>
     </div>
@@ -229,10 +248,9 @@
 
   <h1>🎰 3 Fruit Win</h1>
 
-<audio id="spinSound" src="./spin-232536.mp3" preload="auto"></audio>
-<audio id="winSound" src="./you-win-sequence-1-183948.mp3" preload="auto"></audio>
-<audio id="loseSound" src="./lose-sfx-365579.mp3" preload="auto"></audio>
-
+  <audio id="spinSound" src="./spin-232536.mp3" preload="auto"></audio>
+  <audio id="winSound" src="./you-win-sequence-1-183948.mp3" preload="auto"></audio>
+  <audio id="loseSound" src="./lose-sfx-365579.mp3" preload="auto"></audio>
 
   <div class="machine">
     <div class="reel"><div class="inner" id="r1"></div></div>
@@ -253,51 +271,131 @@
 
   <footer class="footer">REKLAMA / FUTURE FEATURES</footer>
 
-   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const STORAGE_KEYS = {
+      USER_DATA: 'fruit_win_user_data'
+    };
 
-    const userId = tg.initDataUnsafe?.user?.id; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+    tg?.expand();
 
-    if (!userId) {
-      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-      document.getElementById('avatar').src = './img/default.jpg';
-    } else {
-      fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
-        .then(res => {
-          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-          document.getElementById('level').textContent = `Level: ${data.level}`;
-          document.getElementById('xp').textContent = `XP: ${data.xp}`;
-          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
-          document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
-          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById('name').textContent = 'Xatolik!';
-        });
+    let userBalance = 0;
+
+    // Notification ko‘rsatish funksiyasi
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.classList.add('show'), 100);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => document.body.removeChild(notification), 300);
+      }, 3000);
     }
-  </script>
-  <script>
+
+    // Foydalanuvchi ma'lumotlarini yuklash
+    async function loadUser() {
+      const userId = tg?.initDataUnsafe?.user?.id;
+
+      // localStorage'dan ma'lumotlarni o'qish
+      const savedData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+      if (savedData) {
+        const userData = JSON.parse(savedData);
+        userBalance = userData.coins || 0;
+        document.getElementById('name').textContent = userData.name || 'Nomaʼlum';
+        document.getElementById('level').textContent = `Level: ${userData.level}`;
+        document.getElementById('xp').textContent = `XP: ${userData.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${userData.rank} | Score: ${userData.score}`;
+        document.getElementById('coins').textContent = `Tanga: ${userData.coins}`;
+        document.getElementById('avatar').src = userData.avatar?.trim() || './img/default.jpg';
+      }
+
+      if (!userId) {
+        document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+        document.getElementById('avatar').src = './img/default.jpg';
+        showNotification('❌ Telegram ID topilmadi!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/user?telegram_id=${userId}`);
+        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+        const data = await res.json();
+        const userData = {
+          name: data.name || 'Nomaʼlum',
+          level: data.level || 1,
+          xp: data.xp || 0,
+          rank: data.rank || 1,
+          score: data.score || 0,
+          coins: data.coins || 0,
+          avatar: data.avatar?.trim() || './img/default.jpg'
+        };
+        userBalance = userData.coins;
+        document.getElementById('name').textContent = userData.name;
+        document.getElementById('level').textContent = `Level: ${userData.level}`;
+        document.getElementById('xp').textContent = `XP: ${userData.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${userData.rank} | Score: ${userData.score}`;
+        document.getElementById('coins').textContent = `Tanga: ${userData.coins}`;
+        document.getElementById('avatar').src = userData.avatar;
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+      } catch (err) {
+        console.error(err);
+        document.getElementById('name').textContent = 'Xatolik!';
+        document.getElementById('avatar').src = './img/default.jpg';
+        showNotification('❌ Ma\'lumotlarni yuklashda xato yuz berdi!', 'error');
+      }
+    }
+
+    // Balansni serverda yangilash
+    async function updateBalanceOnServer(amount) {
+      console.log("Balans yangilash so'rovi:", amount);
+      try {
+        const res = await fetch('/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: tg?.initDataUnsafe?.user?.id, amount })
+        });
+        if (!res.ok) throw new Error(`HTTP xato: ${res.status}`);
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') throw new Error('Xatolik: noto‘g‘ri server javobi');
+        userBalance = data.newScore;
+        document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
+        // localStorage'ni yangilash
+        const savedData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+        if (savedData) {
+          const userData = JSON.parse(savedData);
+          userData.coins = userBalance;
+          localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+        }
+        console.log("Balans yangilandi:", userBalance);
+        return data.newScore;
+      } catch (err) {
+        console.error("Balans yangilashda xato:", err);
+        showNotification('❌ Balansni yangilashda xato yuz berdi!', 'error');
+        throw err;
+      }
+    }
+
     const fruits = ['🍒', '🍋', '🍇', '🍉', '🍌', '🍊', '🔔', '7️⃣', 'BAR'];
     const multipliers = {
       '🍒': 2, '🍋': 5, '🍇': 7, '🍉': 10,
       '🍌': 3, '🍊': 20, '🔔': 1, '7️⃣': 100, 'BAR': 50
     };
 
+    const spinSound = document.getElementById('spinSound');
+    const winSound = document.getElementById('winSound');
+    const loseSound = document.getElementById('loseSound');
+
     function getUserBalance() {
-      const text = document.getElementById("coins").innerText;
-      const match = text.match(/\d+/);
-      return match ? parseInt(match[0]) : 0;
+      return userBalance;
     }
 
     function updateUserBalance(newBalance) {
-      document.getElementById("coins").innerText = `Tanga: ${newBalance}`;
+      userBalance = newBalance;
+      document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
     }
 
     function setBet(val) {
@@ -332,123 +430,133 @@
       inner.appendChild(finalDiv);
     }
 
-  function showMessage(msg, type = 'error') {
-    const resultDisplay = document.getElementById("result");
-    resultDisplay.textContent = msg;
-    resultDisplay.classList.remove('win-animation', 'lose-animation');
+    function showMessage(msg, type = 'error') {
+      const resultDisplay = document.getElementById("result");
+      resultDisplay.textContent = msg;
+      resultDisplay.classList.remove('win-animation', 'lose-animation');
 
-    if (type === 'success') {
-      resultDisplay.style.color = '#ffcc00';
-      resultDisplay.classList.add('win-animation');
-
-      // porlash effekti yaratish
-      const flash = document.createElement('div');
-      flash.className = 'flash';
-      document.body.appendChild(flash);
-      setTimeout(() => flash.remove(), 1000);
-
-    } else {
-      resultDisplay.style.color = '#ff4444';
-      resultDisplay.classList.add('lose-animation');
-    }
-  }
-
-
-  function spin() {
-    const btn = document.getElementById("spinBtn");
-    const resultDisplay = document.getElementById("result");
-    const betInput = document.getElementById("betAmount");
-    const bet = parseInt(betInput.value);
-    let balance = getUserBalance();
-
-    resultDisplay.textContent = "";
-
-    if (isNaN(bet) || bet <= 0) {
-      showMessage("❗ Iltimos, stavka kiriting.");
-      return;
-    }
-    if (bet > balance) {
-      showMessage("❌ Balansda yetarli tanga yo‘q.");
-      return;
-    }
-
-    balance -= bet;
-    updateUserBalance(balance);
-    btn.disabled = true;
-
-    spinSound.currentTime = 0;
-    spinSound.play();
-
-    const isWin = Math.random() < 0.5;
-    let final1, final2, final3;
-
-    if (isWin) {
-      const fruit = fruits[Math.floor(Math.random() * fruits.length)];
-      final1 = final2 = final3 = fruit;
-    } else {
-      do {
-        final1 = fruits[Math.floor(Math.random() * fruits.length)];
-        final2 = fruits[Math.floor(Math.random() * fruits.length)];
-        final3 = fruits[Math.floor(Math.random() * fruits.length)];
-      } while (final1 === final2 && final2 === final3);
-    }
-
-    const inner1 = document.getElementById('r1');
-    const inner2 = document.getElementById('r2');
-    const inner3 = document.getElementById('r3');
-
-    appendSymbols(inner1, 35, final1);
-    appendSymbols(inner2, 35, final2);
-    appendSymbols(inner3, 35, final3);
-
-    const symbolHeight = document.querySelector('.symbol').offsetHeight || 160;
-    const t1 = 4000 + Math.random() * 1000;
-    const t2 = 4000 + Math.random() * 1000;
-    const t3 = 4000 + Math.random() * 1000;
-    const offset = -34 * symbolHeight;
-
-    setTimeout(() => {
-      inner1.style.transition = `top ${t1 / 1000}s ease-in-out`;
-      inner2.style.transition = `top ${t2 / 1000}s ease-in-out`;
-      inner3.style.transition = `top ${t3 / 1000}s ease-in-out`;
-
-      inner1.style.top = offset + 'px';
-      inner2.style.top = offset + 'px';
-      inner3.style.top = offset + 'px';
-    }, 50);
-
-    setTimeout(() => {
-      if (final1 === final2 && final2 === final3) {
-        const multiplier = multipliers[final1] || 2;
-        const win = bet * multiplier;
-        balance += win;
-        updateUserBalance(balance);
-
-        // 🎧 Yutish ovozi
-        winSound.currentTime = 0;
-        winSound.play();
-
-        showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
+      if (type === 'success') {
+        resultDisplay.style.color = '#ffcc00';
+        resultDisplay.classList.add('win-animation');
+        const flash = document.createElement('div');
+        flash.className = 'flash';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 1000);
       } else {
-        // 🎧 Yutqazish ovozi
-        loseSound.currentTime = 0;
-        loseSound.play();
-
-        showMessage("😢 Yutqazdingiz. Omad keyingisida!", 'error');
+        resultDisplay.style.color = '#ff4444';
+        resultDisplay.classList.add('lose-animation');
       }
-      btn.disabled = false;
-    }, Math.max(t1, t2, t3) + 200);
-  }
+    }
 
+    async function spin() {
+      const btn = document.getElementById("spinBtn");
+      const resultDisplay = document.getElementById("result");
+      const betInput = document.getElementById("betAmount");
+      const bet = parseInt(betInput.value);
+      let balance = getUserBalance();
+
+      resultDisplay.textContent = "";
+
+      if (isNaN(bet) || bet <= 0) {
+        showMessage("❗ Iltimos, stavka kiriting.");
+        return;
+      }
+      if (bet > balance) {
+        showMessage("❌ Balansda yetarli tanga yo‘q.");
+        return;
+      }
+
+      // Balansni mahalliy ravishda kamaytirish
+      balance -= bet;
+      updateUserBalance(balance);
+
+      // Balansni serverda yangilash
+      try {
+        await updateBalanceOnServer(balance);
+      } catch (err) {
+        showMessage("❌ Server bilan bog‘lanishda xato!");
+        return;
+      }
+
+      spinSound.currentTime = 0;
+      spinSound.play();
+
+      btn.disabled = true;
+
+      const isWin = Math.random() < 0.5;
+      let final1, final2, final3;
+
+      if (isWin) {
+        const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+        final1 = final2 = final3 = fruit;
+      } else {
+        do {
+          final1 = fruits[Math.floor(Math.random() * fruits.length)];
+          final2 = fruits[Math.floor(Math.random() * fruits.length)];
+          final3 = fruits[Math.floor(Math.random() * fruits.length)];
+        } while (final1 === final2 && final2 === final3);
+      }
+
+      const inner1 = document.getElementById('r1');
+      const inner2 = document.getElementById('r2');
+      const inner3 = document.getElementById('r3');
+
+      appendSymbols(inner1, 35, final1);
+      appendSymbols(inner2, 35, final2);
+      appendSymbols(inner3, 35, final3);
+
+      const symbolHeight = document.querySelector('.symbol').offsetHeight || 160;
+      const t1 = 4000 + Math.random() * 1000;
+      const t2 = 4000 + Math.random() * 1000;
+      const t3 = 4000 + Math.random() * 1000;
+      const offset = -34 * symbolHeight;
+
+      setTimeout(() => {
+        inner1.style.transition = `top ${t1 / 1000}s ease-in-out`;
+        inner2.style.transition = `top ${t2 / 1000}s ease-in-out`;
+        inner3.style.transition = `top ${t3 / 1000}s ease-in-out`;
+
+        inner1.style.top = offset + 'px';
+        inner2.style.top = offset + 'px';
+        inner3.style.top = offset + 'px';
+      }, 50);
+
+      setTimeout(async () => {
+        if (final1 === final2 && final2 === final3) {
+          const multiplier = multipliers[final1] || 2;
+          const win = bet * multiplier;
+          balance += win;
+          updateUserBalance(balance);
+
+          // Yutish ovozini ijro etish
+          winSound.currentTime = 0;
+          winSound.play();
+
+          // Balansni serverda yangilash
+          try {
+            await updateBalanceOnServer(balance);
+            showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
+          } catch (err) {
+            showMessage("❌ Server bilan bog‘lanishda xato!");
+          }
+        } else {
+          // Yutqazish ovozini ijro etish
+          loseSound.currentTime = 0;
+          loseSound.play();
+
+          showMessage("😢 Yutqazdingiz. Omad keyingisida!", 'error');
+        }
+        btn.disabled = false;
+      }, Math.max(t1, t2, t3) + 200);
+    }
 
     window.onload = () => {
       appendSymbols(document.getElementById("r1"), 3, '7️⃣');
       appendSymbols(document.getElementById("r2"), 3, '7️⃣');
       appendSymbols(document.getElementById("r3"), 3, '7️⃣');
       setBet(300);
+      loadUser();
     };
   </script>
-
 </body>
-
 </html>
