@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎰 3 Fruit Win</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+    .user-info {
+      display: flex;
+      margin: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      align-items: center;
+      z-index: 2;
+      width: 90%;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+    .user-info h3 {
+      color: #0ff;
+      font-size: 24px;
+    }
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    h1 {
+      font-size: 36px;
+      color: #ffcc00;
+      text-shadow: 0 0 10px #ffcc00;
+      margin: 20px 0;
+      z-index: 2;
+    }
+    .machine {
+      display: flex;
+      justify-content: center;
+      width: 90%;
+      max-width: 600px;
+      height: 160px;
+      border: 10px solid #333;
+      border-radius: 20px;
+      background: radial-gradient(circle at center, #2e2e2e, #1b1b1b);
+      box-shadow: 0 0 20px #000, inset 0 0 8px #000;
+      overflow: hidden;
+      margin: 20px 0;
+      z-index: 2;
+    }
+    .reel {
+      flex: 1;
+      height: 100%;
+      margin: 0 5px;
+      background: #111;
+      overflow: hidden;
+      border: 3px solid #000;
+      border-radius: 10px;
+      box-shadow: inset 0 0 10px #000;
+      position: relative;
+    }
+    .reel .inner {
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+    .symbol {
+      font-size: 50px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #222;
+      border-bottom: 1px solid #333;
+    }
+    input[type=number] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #0ff;
+      background: #111;
+      color: #0ff;
+      z-index: 2;
+    }
+    button {
+      padding: 12px 35px;
+      font-size: 20px;
+      margin-top: 15px;
+      background: #184fe8;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #184fe8;
+      transition: 0.3s ease;
+      z-index: 2;
+    }
+    button:hover {
+      background: #184fe8;
+      box-shadow: 0 0 15px #184fe8;
+    }
+    button:disabled {
+      background: #444;
+      color: #aaa;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    #result {
+      font-size: 24px;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #ffcc00;
+      text-shadow: 0 0 6px #ffcc00;
+      z-index: 2;
+    }
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+     /* Yutish effekti uchun */
+  .win-animation {
+    animation: winPulse 0.5s ease-in-out 6;
+  }
+  @keyframes winPulse {
+    0% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
+    50% { transform: scale(1.2); text-shadow: 0 0 20px #fff700; }
+    100% { transform: scale(1); text-shadow: 0 0 10px #ff0; }
+  }
+
+  /* Yutqazish effekti uchun */
+  .lose-animation {
+    animation: shake 0.5s ease-in-out 2;
+  }
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+
+  /* Ekran yutishda porlash effekti */
+  .flash {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(255,255,0,0.4), transparent);
+    z-index: 999;
+    pointer-events: none;
+    animation: flashFade 1s ease-out forwards;
+  }
+
+  @keyframes flashFade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  </style>
+</head>
+<body>
+  <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p> <!-- Qo‘shildi -->
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <h1>🎰 3 Fruit Win</h1>
+
+<audio id="spinSound" src="../sound/spin-232536.mp3" preload="auto"></audio>
+<audio id="winSound" src="../sound//windoot-96335.mp3" preload="auto"></audio>
+<audio id="loseSound" src=".../sound/lose-sfx-365579.mp3" preload="auto"></audio>
+
+
+  <div class="machine">
+    <div class="reel"><div class="inner" id="r1"></div></div>
+    <div class="reel"><div class="inner" id="r2"></div></div>
+    <div class="reel"><div class="inner" id="r3"></div></div>
+  </div>
+
+  <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; z-index:2;">
+    <button onclick="setBet(300)">Min 300</button>
+    <button onclick="setMaxBet()">Max</button>
+    <button onclick="doubleBet()">2x</button>
+  </div>
+
+  <input type="number" id="betAmount" placeholder="💰 Stavka kiriting (masalan: 100)" min="1" />
+  <button onclick="spin()" id="spinBtn">🔁 SPIN</button>
+
+  <div id="result"></div>
+
+  <footer class="footer">REKLAMA / FUTURE FEATURES</footer>
+
+   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
+
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+        });
+    }
+  </script>
+  <script>
+    const fruits = ['🍒', '🍋', '🍇', '🍉', '🍌', '🍊', '🔔', '7️⃣', 'BAR'];
+    const multipliers = {
+      '🍒': 2, '🍋': 5, '🍇': 7, '🍉': 10,
+      '🍌': 3, '🍊': 20, '🔔': 1, '7️⃣': 100, 'BAR': 50
+    };
+
+    function getUserBalance() {
+      const text = document.getElementById("coins").innerText;
+      const match = text.match(/\d+/);
+      return match ? parseInt(match[0]) : 0;
+    }
+
+    function updateUserBalance(newBalance) {
+      document.getElementById("coins").innerText = `Tanga: ${newBalance}`;
+    }
+
+    function setBet(val) {
+      document.getElementById("betAmount").value = val;
+    }
+
+    function setMaxBet() {
+      const balance = getUserBalance();
+      document.getElementById("betAmount").value = balance;
+    }
+
+    function doubleBet() {
+      const input = document.getElementById("betAmount");
+      const val = parseInt(input.value) || 0;
+      input.value = val * 2;
+    }
+
+    function appendSymbols(inner, count, finalFruit) {
+      inner.style.transition = 'none';
+      inner.style.top = '0px';
+      inner.innerHTML = "";
+      for (let i = 0; i < count - 1; i++) {
+        const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+        const div = document.createElement("div");
+        div.className = "symbol";
+        div.textContent = fruit;
+        inner.appendChild(div);
+      }
+      const finalDiv = document.createElement("div");
+      finalDiv.className = "symbol";
+      finalDiv.textContent = finalFruit;
+      inner.appendChild(finalDiv);
+    }
+
+  function showMessage(msg, type = 'error') {
+    const resultDisplay = document.getElementById("result");
+    resultDisplay.textContent = msg;
+    resultDisplay.classList.remove('win-animation', 'lose-animation');
+
+    if (type === 'success') {
+      resultDisplay.style.color = '#ffcc00';
+      resultDisplay.classList.add('win-animation');
+
+      // porlash effekti yaratish
+      const flash = document.createElement('div');
+      flash.className = 'flash';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 1000);
+
+    } else {
+      resultDisplay.style.color = '#ff4444';
+      resultDisplay.classList.add('lose-animation');
+    }
+  }
+
+
+  function spin() {
+    const btn = document.getElementById("spinBtn");
+    const resultDisplay = document.getElementById("result");
+    const betInput = document.getElementById("betAmount");
+    const bet = parseInt(betInput.value);
+    let balance = getUserBalance();
+
+    resultDisplay.textContent = "";
+
+    if (isNaN(bet) || bet <= 0) {
+      showMessage("❗ Iltimos, stavka kiriting.");
+      return;
+    }
+    if (bet > balance) {
+      showMessage("❌ Balansda yetarli tanga yo‘q.");
+      return;
+    }
+
+    balance -= bet;
+    updateUserBalance(balance);
+    btn.disabled = true;
+
+    spinSound.currentTime = 0;
+    spinSound.play();
+
+    const isWin = Math.random() < 0.5;
+    let final1, final2, final3;
+
+    if (isWin) {
+      const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+      final1 = final2 = final3 = fruit;
+    } else {
+      do {
+        final1 = fruits[Math.floor(Math.random() * fruits.length)];
+        final2 = fruits[Math.floor(Math.random() * fruits.length)];
+        final3 = fruits[Math.floor(Math.random() * fruits.length)];
+      } while (final1 === final2 && final2 === final3);
+    }
+
+    const inner1 = document.getElementById('r1');
+    const inner2 = document.getElementById('r2');
+    const inner3 = document.getElementById('r3');
+
+    appendSymbols(inner1, 35, final1);
+    appendSymbols(inner2, 35, final2);
+    appendSymbols(inner3, 35, final3);
+
+    const symbolHeight = document.querySelector('.symbol').offsetHeight || 160;
+    const t1 = 4000 + Math.random() * 1000;
+    const t2 = 4000 + Math.random() * 1000;
+    const t3 = 4000 + Math.random() * 1000;
+    const offset = -34 * symbolHeight;
+
+    setTimeout(() => {
+      inner1.style.transition = `top ${t1 / 1000}s ease-in-out`;
+      inner2.style.transition = `top ${t2 / 1000}s ease-in-out`;
+      inner3.style.transition = `top ${t3 / 1000}s ease-in-out`;
+
+      inner1.style.top = offset + 'px';
+      inner2.style.top = offset + 'px';
+      inner3.style.top = offset + 'px';
+    }, 50);
+
+    setTimeout(() => {
+      if (final1 === final2 && final2 === final3) {
+        const multiplier = multipliers[final1] || 2;
+        const win = bet * multiplier;
+        balance += win;
+        updateUserBalance(balance);
+
+        // 🎧 Yutish ovozi
+        winSound.currentTime = 0;
+        winSound.play();
+
+        showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
+      } else {
+        // 🎧 Yutqazish ovozi
+        loseSound.currentTime = 0;
+        loseSound.play();
+
+        showMessage("😢 Yutqazdingiz. Omad keyingisida!", 'error');
+      }
+      btn.disabled = false;
+    }, Math.max(t1, t2, t3) + 200);
+  }
+
+
+    window.onload = () => {
+      appendSymbols(document.getElementById("r1"), 3, '7️⃣');
+      appendSymbols(document.getElementById("r2"), 3, '7️⃣');
+      appendSymbols(document.getElementById("r3"), 3, '7️⃣');
+      setBet(300);
+    };
+  </script>
+
+</body>
+
+</html>
