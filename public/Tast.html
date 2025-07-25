@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cyberpunk Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * {
   margin: 0;
@@ -15,145 +15,416 @@
 body {
   min-height: 100vh;
   font-family: 'Rajdhani', sans-serif;
-  background: url('/public/bg2.jpg') no-repeat center center fixed;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a0a 100%);
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   color: #fff;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .user-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #0ff;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid #0ff;
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 15px;
+  position: relative;
+}
+
+.user-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0ff, #0f0, #0ff, transparent);
+  animation: glow-line 3s ease-in-out infinite;
+}
+
+@keyframes glow-line {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 .user-profile {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 2px solid #0ff;
+  border: 3px solid #0ff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  object-fit: cover;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+}
+
+.user-details h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0ff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  margin-bottom: 5px;
+}
+
+.user-details p {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+
+.user-stats {
+  text-align: right;
+}
+
+.user-stats p {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.coins {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .toggle-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px;
+  gap: 15px;
+  margin: 25px 20px;
   flex-wrap: wrap;
 }
 
 .toggle-buttons button {
-  background: #1a1a2e;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
   color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
+  border: 2px solid #0ff;
+  padding: 12px 25px;
+  border-radius: 15px;
   cursor: pointer;
-  font-weight: bold;
-  min-width: 100px;
-  transition: 0.3s;
+  font-weight: 600;
+  font-size: 1rem;
+  min-width: 120px;
+  transition: all 0.3s ease;
   flex: 1 1 30%;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.toggle-buttons button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.toggle-buttons button:hover::before {
+  left: 100%;
 }
 
 .toggle-buttons button:hover {
-  background: #0ff;
+  background: linear-gradient(135deg, #0ff, #0f0);
   color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+}
+
+.toggle-buttons button.active {
+  background: linear-gradient(135deg, #0ff, #0f0);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
 }
 
 main {
   flex: 1;
-  padding: 0 20px;
+  padding: 0 20px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .section {
   display: none;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .section.active {
   display: block;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0ff;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  position: relative;
+}
+
+.section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #0ff, transparent);
+}
+
 .task-item,
 .reward-card {
   background: rgba(255, 255, 255, 0.05);
-  padding: 15px;
-  border-radius: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #0ff;
-  transition: 0.3s;
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-item::before,
+.reward-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.task-item:hover::before,
+.reward-card:hover::before {
+  left: 100%;
+}
+
+.task-item:hover,
+.reward-card:hover {
+  transform: translateY(-5px);
+  border-color: #0ff;
+  box-shadow: 0 15px 35px rgba(0, 255, 255, 0.3);
 }
 
 .task-item.completed,
 .reward-card.claimed {
   border-color: #0f0;
   background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 255, 0, 0.2);
+}
+
+.task-item h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0ff;
+  margin-bottom: 8px;
+}
+
+.task-item p {
+  color: #ccc;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .reward-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  gap: 10px;
+  margin-bottom: 15px;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .reward-header img {
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  border: 2px solid #0ff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.reward-header span {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0ff;
+  flex: 1;
 }
 
 .reward-coins {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .claim-btn {
-  padding: 6px 12px;
+  padding: 10px 20px;
   background: linear-gradient(135deg, #0ff, #0f0);
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   color: #000;
-  font-weight: bold;
-  transition: 0.3s;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.claim-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.claim-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .claim-btn:disabled {
   background: #555;
   color: #aaa;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .claim-btn:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 0 10px #0ff;
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
 }
 
 .progress-bar {
-  background: #333;
-  border-radius: 20px;
-  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  height: 12px;
   overflow: hidden;
-  margin-top: 5px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
 .progress {
-  background: linear-gradient(90deg, #0ff, #0f0);
+  background: linear-gradient(90deg, #0ff, #0f0, #0ff);
   height: 100%;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease;
+  border-radius: 25px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.referral-link-container {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  border: 1px solid #0ff;
+  word-break: break-all;
+}
+
+.referral-link-container a {
+  color: #0ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.referral-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.referral-btn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #0ff;
+  border: 2px solid #0ff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  flex: 1;
+  min-width: 120px;
+}
+
+.referral-btn:hover {
+  background: linear-gradient(135deg, #0ff, #0f0);
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
 }
 
 footer {
@@ -161,18 +432,105 @@ footer {
   bottom: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(20px);
   color: #fff;
   text-align: center;
-  padding: 10px;
-  border-top: 1px solid #0ff;
-  font-size: 14px;
+  padding: 15px;
+  border-top: 2px solid #0ff;
+  font-size: 1rem;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.2);
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #0ff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #0ff, #0f0);
+  color: #000;
+  padding: 15px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  z-index: 2000;
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .user-info {
+    padding: 15px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .user-stats {
+    text-align: center;
+  }
+  
+  .toggle-buttons {
+    margin: 20px 15px;
+    gap: 10px;
+  }
+  
+  .toggle-buttons button {
+    flex: 1 1 45%;
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+  
+  main {
+    padding: 0 15px 100px;
+  }
+  
+  .section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .reward-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .referral-buttons {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 480px) {
   .toggle-buttons button {
-    flex: 1 1 30%;
-    font-size: 14px;
-    padding: 8px;
+    flex: 1 1 100%;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+  
+  .task-item,
+  .reward-card {
+    padding: 15px;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
   }
 }
 </style>
@@ -180,23 +538,23 @@ footer {
 <body>
   <div class="user-info">
     <div class="user-profile">
-      <img id="avatar" src="/img/default.jpg" alt="Avatar" class="avatar">
-      <div>
+      <img id="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23333'/%3E%3Ccircle cx='30' cy='25' r='8' fill='%230ff'/%3E%3Cpath d='M15 45c0-8 7-15 15-15s15 7 15 15' fill='%230ff'/%3E%3C/svg%3E" alt="Avatar" class="avatar">
+      <div class="user-details">
         <h3 id="name">Yuklanmoqda...</h3>
-        <p id="level">--</p>
-        <p id="xp">--</p>
+        <p id="level">Level: --</p>
+        <p id="xp">XP: --</p>
       </div>
     </div>
-    <div>
-      <p id="rank">--</p>
-      <p id="coins">Tanga: --</p>
+    <div class="user-stats">
+      <p id="rank">Rank: --</p>
+      <p id="coins" class="coins">💰 Tanga: --</p>
     </div>
   </div>
 
   <div class="toggle-buttons">
-    <button onclick="showSection('tasks')">🎯 Kundalik Vazifalar</button>
-    <button onclick="showSection('ranks')">🏆 Leagues</button>
-    <button onclick="showSection('referrals')">👥 Ref</button>
+    <button id="tasksBtn" class="active" onclick="showSection('tasks')">🎯 Kundalik Vazifalar</button>
+    <button id="ranksBtn" onclick="showSection('ranks')">🏆 Leagues</button>
+    <button id="referralsBtn" onclick="showSection('referrals')">👥 Referral</button>
   </div>
 
   <main>
@@ -211,67 +569,169 @@ footer {
     </div>
 
     <div id="referralsSection" class="section">
-      <h2>👥 Referal Mukofotlari</h2>
+      <h2>👥 Referral Mukofotlari</h2>
+      <div id="referralInfo"></div>
       <div id="referralList"></div>
     </div>
   </main>
 
   <footer>
-    📢 REKLAMA BU YERDA
+    🚀 CYBERPUNK DASHBOARD - KELAJAK ENDI BOSHLANDI!
   </footer>
 
   <script>
-   // Telegram WebApp integratsiyasi
-const tg = window.Telegram?.WebApp || {};
-const userId = tg.initDataUnsafe?.user?.id || 123456; // Test uchun hardcoded ID
+// Telegram WebApp integratsiyasi
+const tg = window.Telegram?.WebApp;
+const userId = tg.initDataUnsafe?.user?.id;
 
-// Foydalanuvchi ma'lumotlarini yuklash
 function loadUser() {
-  console.log("Fetching user data for ID:", userId);
+
+
   if (!userId) {
     document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-    return;
+    document.getElementById('avatar').src = './img/default.jpg';
+  } else {
+    fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
+      .then(res => {
+        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+        document.getElementById('level').textContent = `Level: ${data.level}`;
+        document.getElementById('xp').textContent = `XP: ${data.xp}`;
+        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
+        document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('name').textContent = 'Xatolik!';
+      });
   }
+  }
+// Lokal storage kalitlari
+const STORAGE_KEYS = {
+  USER_DATA: 'cyberpunk_user_data',
+  TASKS: 'cyberpunk_tasks',
+  RANKS: 'cyberpunk_ranks',
+  REFERRALS: 'cyberpunk_referrals'
+};
 
-  fetch(`http://localhost:3000/api/user?telegram_id=${userId}`)
-    .then(res => {
-      console.log("Response:", res);
-      if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-      return res.json();
-    })
-    .then(data => {
-      console.log("User data:", data);
-      document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-      document.getElementById('level').textContent = `Level: ${data.level || 1}`;
-      document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
-      document.getElementById('rank').textContent = `Rank: ${data.rank || 'Bronze'} | Score: ${data.score || 0}`;
-      document.getElementById('coins').textContent = `Tanga: ${data.coins || 0}`;
-      document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : '/img/default.jpg';
-    })
-    .catch(err => {
-      console.error("Error:", err);
-      document.getElementById('name').textContent = 'Xatolik!';
-    });
+// Notification ko'rsatish
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  
+  if (type === 'error') {
+    notification.style.background = 'linear-gradient(135deg, #ff4444, #ff6666)';
+    notification.style.color = '#fff';
+  }
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => document.body.removeChild(notification), 300);
+  }, 3000);
+}
+
+// Foydalanuvchi ma'lumotlarini yuklash
+
+  
+  // UI yangilash
+  document.getElementById('name').textContent = userData.name;
+  document.getElementById('level').textContent = `Level: ${userData.level}`;
+  document.getElementById('xp').textContent = `XP: ${userData.xp}`;
+  document.getElementById('rank').textContent = `Rank: ${userData.rank} | Score: ${userData.score}`;
+  document.getElementById('coins').textContent = `💰 Tanga: ${userData.coins.toLocaleString()}`;
+  
+  if (userData.avatar) {
+    document.getElementById('avatar').src = userData.avatar;
+  }
+}
+
+// Foydalanuvchi ma'lumotlarini saqlash
+function saveUserData(updates) {
+  const savedData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+  const userData = savedData ? JSON.parse(savedData) : {};
+  
+  const updatedData = { ...userData, ...updates };
+  localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(updatedData));
+  
+  loadUser(); // UI ni yangilash
 }
 
 // Kundalik vazifalar
-const tasks = [
-  { id: 1, name: 'Botni ishga tushiring', desc: 'Telegram botni ishga tushiring.', reward: 5, done: false },
-  { id: 2, name: 'Profilni to‘ldiring', desc: 'Profilingizni to‘ldiring.', reward: 10, done: true },
-  { id: 3, name: 'Kunlik kirish', desc: 'Bugun tizimga kiring.', reward: 3, done: false },
+let tasks = [
+  { 
+    id: 1, 
+    name: '🚀 Botni ishga tushiring', 
+    desc: 'Telegram botni birinchi marta ishga tushiring va bonus oling.', 
+    reward: 500, 
+    done: false,
+    type: 'daily'
+  },
+  { 
+    id: 2, 
+    name: '👤 Profilni to\'ldiring', 
+    desc: 'O\'z profilingizni to\'ldiring va qo\'shimcha mukofot oling.', 
+    reward: 1000, 
+    done: false,
+    type: 'profile'
+  },
+  { 
+    id: 3, 
+    name: '📅 Kunlik kirish', 
+    desc: 'Har kuni tizimga kirib, kunlik bonusni oling.', 
+    reward: 300, 
+    done: false,
+    type: 'daily'
+  },
+  { 
+    id: 4, 
+    name: '🎮 10 marta o\'yin o\'ynang', 
+    desc: 'Biror o\'yinni 10 marta o\'ynab, tajriba to\'plang.', 
+    reward: 750, 
+    done: false,
+    type: 'gaming'
+  },
+  { 
+    id: 5, 
+    name: '⭐ 5 ta yulduz bering', 
+    desc: 'Ilovaga 5 yulduzli baho bering va mukofot oling.', 
+    reward: 1500, 
+    done: false,
+    type: 'rating'
+  }
 ];
 
 function loadTasks() {
+  const savedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
+  if (savedTasks) {
+    tasks = JSON.parse(savedTasks);
+  }
+  
   const list = document.getElementById('taskList');
   list.innerHTML = '';
+  
   tasks.forEach(task => {
     const div = document.createElement('div');
     div.className = 'task-item' + (task.done ? ' completed' : '');
     div.innerHTML = `
       <h4>${task.name}</h4>
       <p>${task.desc}</p>
-      <p>🎁 Mukofot: ${task.reward} tanga</p>
-      ${task.done ? '<p style="color:#0f0;">✅ Bajarilgan</p>' : `<button onclick="completeTask(${task.id})" class="claim-btn">Bajarildi</button>`}
+      <p style="color: #ffd700; font-weight: 600;">🎁 Mukofot: ${task.reward.toLocaleString()} tanga</p>
+      <div class="progress-bar">
+        <div class="progress" style="width: ${task.done ? 100 : 0}%;"></div>
+      </div>
+      ${task.done 
+        ? '<p style="color:#0f0; font-weight: 600; margin-top: 10px;">✅ Bajarilgan</p>' 
+        : `<button onclick="completeTask(${task.id})" class="claim-btn" style="margin-top: 10px;">Bajarish</button>`
+      }
     `;
     list.appendChild(div);
   });
@@ -279,182 +739,363 @@ function loadTasks() {
 
 function completeTask(id) {
   const task = tasks.find(t => t.id === id);
-  if (task) {
+  if (task && !task.done) {
     task.done = true;
-    alert('✅ Vazifa bajarildi!');
+    
+    // Foydalanuvchiga tanga qo'shish
+    const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA));
+    userData.coins += task.reward;
+    userData.xp += Math.floor(task.reward / 10);
+    
+    // Level tekshirish
+    if (userData.xp >= userData.level * 1000) {
+      userData.level += 1;
+      showNotification(`🎉 Tabriklaymiz! ${userData.level} levelga ko'tarildingiz!`);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+    
+    showNotification(`✅ Vazifa bajarildi! +${task.reward.toLocaleString()} tanga olindi!`);
     loadTasks();
+    loadUser();
   }
 }
 
 // Rank mukofotlari
-const ranks = [
-  { name: 'Silver', reward: 5000, progress: 100, claimed: false, img: '/img/photo_2025-07-14_22-54-47.jpg' },
-  { name: 'Gold', reward: 10000, progress: 80, claimed: false, img: '/img/gold.png' },
-  { name: 'Platinum', reward: 30000, progress: 30, claimed: false, img: '/img/platinum.png' },
+let ranks = [
+  { 
+    name: 'Silver', 
+    reward: 5000, 
+    progress: 85, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23C0C0C0"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="20" font-weight="bold"%3ES%3C/text%3E%3C/svg%3E',
+    requirement: 'Level 5 ga yeting'
+  },
+  { 
+    name: 'Gold', 
+    reward: 15000, 
+    progress: 60, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23FFD700"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="20" font-weight="bold"%3EG%3C/text%3E%3C/svg%3E',
+    requirement: 'Level 10 ga yeting'
+  },
+  { 
+    name: 'Platinum', 
+    reward: 50000, 
+    progress: 25, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23E5E4E2"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="20" font-weight="bold"%3EP%3C/text%3E%3C/svg%3E',
+    requirement: 'Level 20 ga yeting'
+  },
+  { 
+    name: 'Diamond', 
+    reward: 100000, 
+    progress: 5, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23B9F2FF"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="20" font-weight="bold"%3ED%3C/text%3E%3C/svg%3E',
+    requirement: 'Level 50 ga yeting'
+  }
 ];
 
 function loadRanks() {
+  const savedRanks = localStorage.getItem(STORAGE_KEYS.RANKS);
+  if (savedRanks) {
+    ranks = JSON.parse(savedRanks);
+  }
+  
   const list = document.getElementById('rankList');
   list.innerHTML = '';
+  
   ranks.forEach((rank, idx) => {
     const div = document.createElement('div');
     div.className = 'reward-card' + (rank.claimed ? ' claimed' : '');
     div.innerHTML = `
       <div class="reward-header">
         <img src="${rank.img}" alt="${rank.name}">
-        <span>${rank.name}</span>
+        <span>${rank.name} Rank</span>
         ${rank.progress >= 100 && !rank.claimed
-          ? `<button onclick="claimRank(${idx})" class="claim-btn">Claim</button>`
-          : `<button disabled class="claim-btn">Claim</button>`}
+          ? `<button onclick="claimRank(${idx})" class="claim-btn">Olish</button>`
+          : `<button disabled class="claim-btn">${rank.claimed ? 'Olingan' : 'Kutish'}</button>`}
       </div>
-      <span class="reward-coins">🪙 ${rank.reward.toLocaleString()}</span>
+      <span class="reward-coins">🪙 ${rank.reward.toLocaleString()} tanga</span>
+      <p style="color: #aaa; margin-bottom: 10px;">${rank.requirement}</p>
       <div class="progress-bar">
         <div class="progress" style="width:${rank.progress}%;"></div>
       </div>
+      <p style="color: #0ff; font-size: 0.9rem; margin-top: 5px;">Progress: ${rank.progress}%</p>
     `;
     list.appendChild(div);
   });
 }
 
 function claimRank(idx) {
-  ranks[idx].claimed = true;
-  alert(`${ranks[idx].name} mukofoti olindi!`);
-  loadRanks();
+  if (ranks[idx].progress >= 100 && !ranks[idx].claimed) {
+    ranks[idx].claimed = true;
+    
+    // Foydalanuvchiga tanga qo'shish
+    const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA));
+    userData.coins += ranks[idx].reward;
+    
+    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    localStorage.setItem(STORAGE_KEYS.RANKS, JSON.stringify(ranks));
+    
+    showNotification(`🏆 ${ranks[idx].name} mukofoti olindi! +${ranks[idx].reward.toLocaleString()} tanga!`);
+    loadRanks();
+    loadUser();
+  }
 }
 
 // Referral tizimi
 let referrals = [
-  { count: 1, reward: 2500, progress: 0, claimed: false, img: '/img/cat.png' },
-  { count: 3, reward: 50000, progress: 0, claimed: false, img: '/img/cat.png' },
-  { count: 10, reward: 200000, progress: 0, claimed: false, img: '/img/cat.png' },
+  { 
+    count: 1, 
+    reward: 2500, 
+    progress: 0, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%230ff"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="16" font-weight="bold"%3E1%3C/text%3E%3C/svg%3E',
+    description: '1 ta do\'st taklif qiling'
+  },
+  { 
+    count: 3, 
+    reward: 7500, 
+    progress: 0, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%230f0"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="16" font-weight="bold"%3E3%3C/text%3E%3C/svg%3E',
+    description: '3 ta do\'st taklif qiling'
+  },
+  { 
+    count: 10, 
+    reward: 25000, 
+    progress: 0, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23ffd700"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23000" font-size="14" font-weight="bold"%3E10%3C/text%3E%3C/svg%3E',
+    description: '10 ta do\'st taklif qiling'
+  },
+  { 
+    count: 25, 
+    reward: 75000, 
+    progress: 0, 
+    claimed: false, 
+    img: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"%3E%3Ccircle cx="22.5" cy="22.5" r="22.5" fill="%23ff6b6b"/%3E%3Ctext x="22.5" y="28" text-anchor="middle" fill="%23fff" font-size="14" font-weight="bold"%3E25%3C/text%3E%3C/svg%3E',
+    description: '25 ta do\'st taklif qiling'
+  }
 ];
 
 function loadReferrals() {
-  // Serverdan ma'lumotlarni olish (agar server mavjud bo'lmasa, lokal ma'lumotlar ishlatiladi)
-  fetch(`api/referrals?telegram_id=${userId}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Referral ma'lumotlari topilmadi");
-      return res.json();
-    })
-    .then(data => {
-      referrals = data; // Serverdan kelgan ma'lumotlarni yangilash
-      renderReferrals();
-    })
-    .catch(err => {
-      console.error("Referral yuklashda xatolik:", err);
-      renderReferrals(); // Lokal ma'lumotlar bilan davom etish
-    });
+  const savedReferrals = localStorage.getItem(STORAGE_KEYS.REFERRALS);
+  if (savedReferrals) {
+    referrals = JSON.parse(savedReferrals);
+  }
+  
+  displayReferralLink();
+  renderReferrals();
 }
 
 function renderReferrals() {
   const list = document.getElementById('referralList');
   list.innerHTML = '';
+  
   referrals.forEach((ref, idx) => {
     const div = document.createElement('div');
     div.className = 'reward-card' + (ref.claimed ? ' claimed' : '');
     div.innerHTML = `
       <div class="reward-header">
         <img src="${ref.img}" alt="Invite ${ref.count} Friends">
-        <span>Invite ${ref.count} Friends</span>
+        <span>${ref.description}</span>
         ${ref.progress >= 100 && !ref.claimed
-          ? `<button onclick="claimReferral(${idx})" class="claim-btn">Claim</button>`
-          : `<button disabled class="claim-btn">Claim</button>`}
+          ? `<button onclick="claimReferral(${idx})" class="claim-btn">Olish</button>`
+          : `<button disabled class="claim-btn">${ref.claimed ? 'Olingan' : 'Kutish'}</button>`}
       </div>
-      <span class="reward-coins">🪙 ${ref.reward.toLocaleString()}</span>
+      <span class="reward-coins">🪙 ${ref.reward.toLocaleString()} tanga</span>
       <div class="progress-bar">
         <div class="progress" style="width:${ref.progress}%;"></div>
       </div>
+      <p style="color: #0ff; font-size: 0.9rem; margin-top: 5px;">Progress: ${Math.floor(ref.progress)}%</p>
     `;
     list.appendChild(div);
   });
 }
 
 function claimReferral(idx) {
-  referrals[idx].claimed = true;
-  alert(`Referal mukofoti olindi! +${referrals[idx].reward} tanga`);
-  // Serverga yangilash jo'natish (masalan, POST so'rovi)
-  fetch(`api/referrals/${userId}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ index: idx, claimed: true })
-  })
-    .then(res => res.json())
-    .then(() => loadReferrals())
-    .catch(err => console.error("Claim saqlashda xatolik:", err));
+  if (referrals[idx].progress >= 100 && !referrals[idx].claimed) {
+    referrals[idx].claimed = true;
+    
+    // Foydalanuvchiga tanga qo'shish
+    const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA));
+    userData.coins += referrals[idx].reward;
+    
+    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    localStorage.setItem(STORAGE_KEYS.REFERRALS, JSON.stringify(referrals));
+    
+    showNotification(`👥 Referral mukofoti olindi! +${referrals[idx].reward.toLocaleString()} tanga!`);
+    renderReferrals();
+    loadUser();
+  }
 }
 
 // Referral havolasi generatsiyasi
 function generateReferralLink() {
-  const baseUrl = window.location.origin; // Joriy domen
-  return `${baseUrl}/referral?ref=${userId}`;
+  const baseUrl = window.location.origin;
+  return `${baseUrl}?ref=${userId}`;
 }
 
 // Referral havolasini ko'rsatish
 function displayReferralLink() {
   const link = generateReferralLink();
-  const referralSection = document.getElementById('referralsSection');
-  const linkElement = document.createElement('p');
-  linkElement.innerHTML = `
-  <span style="color: #0ff; font-weight: bold; font-size: 16px;">Sizning referral havolangiz:</span>
-  <div class="referral-link-container">
-    <a href="${link}" target="_blank"">${link}</a>
-  </div>
-  <button onclick="copyToClipboard('${link}')" style="background: #1a1a2e; color: #0ff; border: 1px solid #0ff; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: background 0.3s;"
-          onmouseover="this.style.background='#0ff'; this.style.color='#000';"
-          onmouseout="this.style.background='#1a1a2e'; this.style.color='#0ff';">Nusxalash</button>
-  <button onclick="shareReferral()" style="background: #1a1a2e; color: #0ff; border: 1px solid #0ff; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: background 0.3s;"
-          onmouseover="this.style.background='#0ff'; this.style.color='#000';"
-          onmouseout="this.style.background='#1a1a2e'; this.style.color='#0ff';">Ulashish</button>
-`;
-  referralSection.insertBefore(linkElement, referralSection.firstChild.nextSibling); // Sektsiya boshiga qo‘shish
+  const referralInfo = document.getElementById('referralInfo');
+  
+  referralInfo.innerHTML = `
+    <div style="background: rgba(0, 255, 255, 0.1); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid rgba(0, 255, 255, 0.3);">
+      <h3 style="color: #0ff; margin-bottom: 15px; text-align: center;">🔗 Sizning Referral Havolangiz</h3>
+      <div class="referral-link-container">
+        <a href="${link}" target="_blank" id="referralLink">${link}</a>
+      </div>
+      <div class="referral-buttons">
+        <button onclick="copyToClipboard('${link}')" class="referral-btn">📋 Nusxalash</button>
+        <button onclick="shareReferral()" class="referral-btn">📤 Ulashish</button>
+        
+      </div>
+      <p style="color: #aaa; text-align: center; margin-top: 15px; font-size: 0.9rem;">
+        Do'stlaringizni taklif qiling va har bir faol do'st uchun bonus oling!
+      </p>
+    </div>
+  `;
 }
 
 // Havolani nusxalash
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => alert('Havola nusxalandi!'));
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      showNotification('📋 Havola nusxalandi!');
+    }).catch(() => {
+      fallbackCopyTextToClipboard(text);
+    });
+  } else {
+    fallbackCopyTextToClipboard(text);
+  }
+}
+
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    showNotification('📋 Havola nusxalandi!');
+  } catch (err) {
+    showNotification('❌ Nusxalashda xatolik!', 'error');
+  }
+  
+  document.body.removeChild(textArea);
 }
 
 // Havolani ulashish
 function shareReferral() {
   const link = generateReferralLink();
+  const shareData = {
+    title: 'Cyberpunk Dashboard ga qo\'shiling!',
+    text: 'Mening referral havolam orqali ro\'yxatdan o\'ting va bonus oling!',
+    url: link,
+  };
+  
   if (navigator.share) {
-    navigator.share({
-      title: 'Mening referral havolam',
-      text: 'Do‘stlarimni taklif qiling va mukofot oling!',
-      url: link,
-    }).catch(err => console.error("Ulashishda xatolik:", err));
+    navigator.share(shareData).then(() => {
+      showNotification('📤 Havola ulashildi!');
+    }).catch((err) => {
+      console.error('Ulashishda xatolik:', err);
+      copyToClipboard(link);
+    });
   } else {
-    alert('Ushbu brauzerda ulashish imkoni yo‘q. Havolani nusxalab ulashing: ' + link);
+    copyToClipboard(link);
+    showNotification('📋 Havola nusxalandi! Uni do\'stlaringiz bilan ulashing.');
   }
 }
 
-// Referral progressni yangilash (masalan, do'stlar qo'shilganda)
-function updateReferralProgress(referredUserId) {
-  fetch(`api/referrals/update?telegram_id=${userId}&referred_id=${referredUserId}`, {
-    method: 'POST'
-  })
-    .then(res => res.json())
-    .then(data => {
-      referrals = data.referrals; // Yangilangan ma'lumotlarni olish
-      renderReferrals();
-    })
-    .catch(err => console.error("Progress yangilashda xatolik:", err));
+// Test uchun referral simulatsiyasi
+function simulateReferral() {
+  const currentReferrals = parseInt(localStorage.getItem('current_referrals') || '0');
+  const newReferrals = currentReferrals + 1;
+  localStorage.setItem('current_referrals', newReferrals.toString());
+  
+  // Referral progressni yangilash
+  referrals.forEach(ref => {
+    ref.progress = Math.min(100, (newReferrals / ref.count) * 100);
+  });
+  
+  localStorage.setItem(STORAGE_KEYS.REFERRALS, JSON.stringify(referrals));
+  
+  showNotification(`🎉 Yangi referral qo'shildi! Jami: ${newReferrals}`);
+  renderReferrals();
 }
 
-// Bo‘limlarni ko‘rsatish
+// Bo'limlarni ko'rsatish
 function showSection(section) {
+  // Barcha bo'limlarni yashirish
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.toggle-buttons button').forEach(btn => btn.classList.remove('active'));
+  
+  // Tanlangan bo'limni ko'rsatish
   document.getElementById(section + 'Section').classList.add('active');
+  document.getElementById(section + 'Btn').classList.add('active');
+}
+
+// Progress yangilash (level asosida)
+function updateProgress() {
+  const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || '{}');
+  const userLevel = userData.level || 1;
+  
+  // Rank progressni yangilash
+  ranks.forEach(rank => {
+    switch(rank.name) {
+      case 'Silver':
+        rank.progress = Math.min(100, (userLevel / 5) * 100);
+        break;
+      case 'Gold':
+        rank.progress = Math.min(100, (userLevel / 10) * 100);
+        break;
+      case 'Platinum':
+        rank.progress = Math.min(100, (userLevel / 20) * 100);
+        break;
+      case 'Diamond':
+        rank.progress = Math.min(100, (userLevel / 50) * 100);
+        break;
+    }
+  });
+  
+  localStorage.setItem(STORAGE_KEYS.RANKS, JSON.stringify(ranks));
 }
 
 // Sahifa yuklanganda barcha ma'lumotlarni yuklash
 window.onload = () => {
-  loadUser();
-  loadTasks();
-  loadRanks();
-  loadReferrals();
-  displayReferralLink();
+  // Loading animatsiyasini ko'rsatish
+  document.getElementById('name').innerHTML = '<span class="loading"></span> Yuklanmoqda...';
+  
+  setTimeout(() => {
+    loadUser();
+    loadTasks();
+    updateProgress();
+    loadRanks();
+    loadReferrals();
+    
+    showNotification('🚀 Dashboard muvaffaqiyatli yuklandi!');
+  }, 1000);
 };
+
+// Har 30 soniyada progress yangilanadi
+setInterval(updateProgress, 30000);
+
+// Telegram WebApp sozlamalari
+if (tg.initData) {
+  tg.ready();
+  tg.expand();
+}
   </script>
 </body>
 </html>
