@@ -10,11 +10,7 @@
   // Foydalanuvchini olish yoki yaratish
  app.get('/api/user', async (req, res) => {
   const telegram_id = req.query.telegram_id;
-  // first_name yoki last_name ni olish
-  const first_name = req.query.first_name || '';
-  const last_name = req.query.last_name || '';
-  // Nomni belgilash: first_name, keyin last_name, aks holda 'No Name'
-  const name = first_name || last_name || 'No Name';
+  const name = req.query.name || 'No Name';
   const avatar = req.query.avatar || '/img/default.jpg';
 
   if (!telegram_id) return res.status(400).send('telegram_id kerak');
@@ -25,16 +21,6 @@
       [telegram_id]
     );
 
-    if (userResult.rows.length === 0) {
-      const insertResult = await pool.query(
-        `INSERT INTO users (telegram_id, name, avatar, coins, last_bonus)
-         VALUES ($1, $2, $3, 5000, NOW())
-         RETURNING name, level, xp, rank, score, avatar, coins`,
-        [telegram_id, name, avatar]
-      );
-      console.log(`Yangi foydalanuvchi yaratildi: ${telegram_id}, name: ${name}`);
-      return res.json(insertResult.rows[0]);
-    }
 
     let user = userResult.rows[0];
     const now = new Date();
@@ -62,6 +48,7 @@
     res.status(500).send('Serverda xatolik');
   }
 });
+
 
   
 
