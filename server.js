@@ -10,7 +10,11 @@
   // Foydalanuvchini olish yoki yaratish
  app.get('/api/user', async (req, res) => {
   const telegram_id = req.query.telegram_id;
-  const name = req.query.name || 'No Name';
+  // first_name yoki last_name ni olish
+  const first_name = req.query.first_name || '';
+  const last_name = req.query.last_name || '';
+  // Nomni belgilash: first_name, keyin last_name, aks holda 'No Name'
+  const name = first_name || last_name || 'No Name';
   const avatar = req.query.avatar || '/img/default.jpg';
 
   if (!telegram_id) return res.status(400).send('telegram_id kerak');
@@ -28,7 +32,7 @@
          RETURNING name, level, xp, rank, score, avatar, coins`,
         [telegram_id, name, avatar]
       );
-      console.log(`Yangi foydalanuvchi yaratildi: ${telegram_id}`);
+      console.log(`Yangi foydalanuvchi yaratildi: ${telegram_id}, name: ${name}`);
       return res.json(insertResult.rows[0]);
     }
 
@@ -58,7 +62,6 @@
     res.status(500).send('Serverda xatolik');
   }
 });
-
 
   
 
