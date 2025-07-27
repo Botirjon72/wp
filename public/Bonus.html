@@ -2,11 +2,12 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Domino Bonus</title>
+  <!-- Google Fonts import -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-
+    /* Umumiy stillar */
     * {
       margin: 0;
       padding: 0;
@@ -24,6 +25,7 @@
       overflow-x: hidden;
     }
 
+    /* Yulduzli fon animatsiyasi */
     body::before {
       content: "";
       position: fixed;
@@ -43,6 +45,7 @@
       100% { transform: translateY(-1000px); }
     }
 
+    /* Asosiy konteyner */
     main {
       flex: 1;
       display: flex;
@@ -53,6 +56,7 @@
       z-index: 2;
     }
 
+    /* Foydalanuvchi ma'lumotlari konteyneri */
     .user-info {
       display: flex;
       justify-content: space-between;
@@ -74,6 +78,7 @@
       gap: 15px;
     }
 
+    /* Avatar stillari */
     .avatar {
       width: 60px;
       height: 60px;
@@ -87,6 +92,7 @@
       transform: scale(1.1);
     }
 
+    /* Matn stillari */
     .user-info h3 {
       color: #00f0ff;
       font-size: 26px;
@@ -101,6 +107,7 @@
       color: #e0e0e0;
     }
 
+    /* Bonus sarlavhasi */
     .bonus-title {
       text-align: center;
       font-size: 28px;
@@ -113,6 +120,7 @@
       z-index: 2;
     }
 
+    /* Domino konteyneri */
     .domino-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -125,6 +133,7 @@
       z-index: 2;
     }
 
+    /* Domino elementi */
     .domino {
       width: 80px;
       height: 80px;
@@ -140,7 +149,7 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
-    /* CSS bilan tanga dizayni */
+    /* Tanga dizayni */
     .coin {
       width: 40px;
       height: 40px;
@@ -175,6 +184,7 @@
       opacity: 0.3;
     }
 
+    /* Domino holatlari */
     .domino.available {
       background: linear-gradient(145deg, #00f0ff, #0077ff);
       cursor: pointer;
@@ -212,6 +222,7 @@
       border-color: #dc3545;
     }
 
+    /* Footer stillari */
     footer.footer {
       position: fixed;
       bottom: 0;
@@ -229,68 +240,30 @@
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
     }
 
+    /* Media so'rovlari */
     @media (max-width: 768px) {
-      .user-info h3 {
-        font-size: 22px;
-      }
-
-      .domino {
-        width: 70px;
-        height: 70px;
-        font-size: 20px;
-      }
-
-      .coin {
-        width: 35px;
-        height: 35px;
-      }
-
-      .coin::before {
-        font-size: 18px;
-      }
-
-      .bonus-title {
-        font-size: 24px;
-      }
+      .user-info h3 { font-size: 22px; }
+      .domino { width: 70px; height: 70px; font-size: 20px; }
+      .coin { width: 35px; height: 35px; }
+      .coin::before { font-size: 18px; }
+      .bonus-title { font-size: 24px; }
     }
 
     @media (max-width: 480px) {
-      .user-info {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .user-info h3 {
-        font-size: 18px;
-      }
-
-      .domino {
-        width: 60px;
-        height: 60px;
-      
-        font-size: 18px;
-      }
-
-      .coin {
-        width: 30px;
-        height: 30px;
-      }
-
-      .coin::before {
-        font-size: 16px;
-      }
-
-      .bonus-title {
-        font-size: 20px;
-      }
+      .user-info { flex-direction: column; align-items: flex-start; }
+      .user-info h3 { font-size: 18px; }
+      .domino { width: 60px; height: 60px; font-size: 18px; }
+      .coin { width: 30px; height: 30px; }
+      .coin::before { font-size: 16px; }
+      .bonus-title { font-size: 20px; }
     }
   </style>
 </head>
 <body>
-  <!-- Foydalanuvchi ma’lumotlari -->
+  <!-- Foydalanuvchi ma'lumotlari -->
   <div class="user-info">
     <div class="user-profile">
-      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar" />
       <div>
         <h3 id="name">Yuklanmoqda...</h3>
         <p id="level">--</p>
@@ -303,31 +276,33 @@
     </div>
   </div>
 
+  <!-- Bonus sarlavhasi -->
   <div class="bonus-title">Daily Bonus</div>
 
-  <div class="domino-container" id="bonusArea">
-    <!-- JavaScript orqali to‘ldiriladi -->
-  </div>
+  <!-- Domino konteyneri -->
+  <div class="domino-container" id="bonusArea"></div>
 
-  <footer class="footer">
-    REKLAMA
-  </footer>
+  <!-- Footer -->
+  <footer class="footer">REKLAMA</footer>
 
-  <!-- Telegram WebApp JS -->
+  <!-- Telegram WebApp skripti -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
+    // Telegram WebApp sozlamalari
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // Foydalanuvchi ID sini olish
     const userId = tg.initDataUnsafe?.user?.id;
 
+    // Foydalanuvchi ma'lumotlarini yuklash
     if (!userId) {
       document.getElementById('name').textContent = 'Telegram ID topilmadi!';
       document.getElementById('avatar').src = './img/default.jpg';
     } else {
       fetch(`/api/user?telegram_id=${userId}`)
         .then(res => {
-          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          if (!res.ok) throw new Error('Foydalanuvchi topilmadi');
           return res.json();
         })
         .then(data => {
@@ -347,22 +322,26 @@
 
   <!-- Bonus logikasi -->
   <script>
+    // DOM elementlari
     const bonusContainer = document.getElementById('bonusArea');
     const totalDays = 24;
-    const bonusKey = "domino_bonus_state";
+    const bonusKey = 'domino_bonus_state';
     const ONE_DAY = 24 * 60 * 60 * 1000;
 
+    // Bonus holatini localStorage dan olish
     let bonusState = JSON.parse(localStorage.getItem(bonusKey)) || {
       claimed: [],
-      startTime: Date.now()
+      startTime: Date.now(),
     };
 
+    // Ochilgan kunni hisoblash
     const now = Date.now();
     const diff = now - bonusState.startTime;
     const openIndex = Math.min(Math.floor(diff / ONE_DAY), totalDays - 1);
 
+    // Domino elementlarini render qilish
     function renderDominos() {
-      bonusContainer.innerHTML = "";
+      bonusContainer.innerHTML = '';
 
       for (let i = 0; i < totalDays; i++) {
         const dom = document.createElement('div');
@@ -376,7 +355,6 @@
           const coin = document.createElement('div');
           coin.classList.add('coin');
           dom.appendChild(coin);
-
           dom.addEventListener('click', () => claimBonus(i));
         } else if (i < openIndex) {
           dom.classList.add('missed');
@@ -390,6 +368,7 @@
       }
     }
 
+    // Bonusni olish funksiyasi
     function claimBonus(index) {
       if (bonusState.claimed.includes(index) || index !== openIndex) return;
       bonusState.claimed.push(index);
@@ -398,6 +377,7 @@
       renderDominos();
     }
 
+    // Dastlabki render
     renderDominos();
   </script>
 </body>

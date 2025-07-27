@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rainbet - Plinko O'yini</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+  <div class="user-info">
+    <div class="left">
+      <img class="avatar" id="avatar" src="./img/default.jpg" alt="Avatar" />
+      <div class="user-details">
+        <span class="name" id="name">Yuklanmoqda...</span>
+        <span class="xp" id="xp">XP: --</span>
+        <span class="level" id="level">Daraja: --</span>
+      </div>
+    </div>
+    <div class="right">
+      <span class="rank" id="rank">🏅 Rank: --</span>
+      <span class="tanga">💰 Tanga: <span id="balance">1000</span></span>
+    </div>
+  </div>
+
+  <!-- CANVAS (peglar) -->
+  <canvas id="plinkoCanvas" width="400" height="500"></canvas>
+
+  <!-- SLOT REWARDS -->
+  <div class="rewards" id="slotContainer"></div>
+
+  <!-- KONTROLLAR (tugmalar + input) -->
+  <div class="controls">
+    <input type="number" id="betAmount" placeholder="💰 Tanga miqdori" min="300" max="1000" value="300">
+    <div class="btns">
+      <button onclick="document.getElementById('betAmount').value = 300">Min</button>
+      <button onclick="document.getElementById('betAmount').value = 1000">Max</button>
+      <button id="dropBall">⬇️ Drop</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    🚀 REKLAMA: Yaqinda yangi o‘yinlar! | VIP bonuslar
+  </footer>
+
+  <!-- SCRIPT -->
+  <script src="script.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id;
+
+    if (!userId) {
+      // Agar foydalanuvchi Telegram orqali kirmagan bo‘lsa
+      document.getElementById('name').textContent = 'Durbek!';
+      document.getElementById('avatar').src = './img/default.jpg';
+      document.getElementById('xp').textContent = 'XP: 0';
+      document.getElementById('level').textContent = 'Daraja: 1';
+      document.getElementById('rank').textContent = '🏅 Rank: Boshlovchi';
+      document.getElementById('balance').textContent = '1000'; // Test uchun
+    } else {
+      // Ma'lumotlarni backenddan olib kelish
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+          document.getElementById('xp').textContent = `XP: ${data.xp}`;
+          document.getElementById('level').textContent = `Daraja: ${data.level}`;
+          document.getElementById('rank').textContent = `🏅 Rank: ${data.rank}`;
+          document.getElementById('balance').textContent = data.coins ?? '1000'; // Agar coins mavjud bo‘lmasa 1000
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+          document.getElementById('balance').textContent = '1000'; // Xatolikda ham test qiymati
+        });
+    }
+  </script>
+</body>
+</html>
