@@ -182,7 +182,15 @@ function getRandomReward() {
 }
 
 
-function updateBalls() {
+async function updateBalls() {
+  const tg = window.Telegram?.WebApp;
+  const userId = tg?.initDataUnsafe?.user?.id;
+
+  if (!userId) {
+    showNotification('❌ Telegram ID topilmadi!', 'error');
+    return;
+  }
+
   for (let i = balls.length - 1; i >= 0; i--) {
     const ball = balls[i];
     ball.update();
@@ -196,20 +204,44 @@ function updateBalls() {
       rewards[index] = reward;
 
       const winAmount = Math.round(currentBet * reward);
-      balance += winAmount;
 
-      reward > 1 ? playWinSound() : playLoseSound();
+      try {
+        // Serverga balansni yangilash so'rovi
+        const res = await fetch('/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount: winAmount })
+        });
 
-      document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
+        }
 
-      const slot = slotElements[index];
-      if (slot) {
-        slot.textContent = reward + 'x';
-        slot.classList.add('active');
-        setTimeout(() => {
-          slot.classList.remove('active');
-          slot.textContent = '';
-        }, 1000);
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') {
+          throw new Error('Serverdan noto‘g‘ri javob keldi');
+        }
+
+        userBalance = data.newScore;
+        document.getElementById('coins').textContent = `Tanga: ${userBalance.toLocaleString()}`;
+
+        // Muvaffaqiyatli o'yin natijasini ko'rsatish
+        reward > 1 ? playWinSound() : playLoseSound();
+
+        const slot = slotElements[index];
+        if (slot) {
+          slot.textContent = reward + 'x';
+          slot.classList.add('active');
+          setTimeout(() => {
+            slot.classList.remove('active');
+            slot.textContent = '';
+          }, 1000);
+        }
+
+      } catch (err) {
+        console.error('Balans yangilash xatosi:', err);
+        showNotification(`❌ Xatolik: ${err.message}`, 'error');
       }
 
       ball.scored = true;
