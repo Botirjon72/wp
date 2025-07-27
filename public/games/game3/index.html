@@ -19,7 +19,7 @@
     </div>
     <div class="right">
       <span class="rank" id="rank">🏅 Rank: --</span>
-      <span class="tanga">💰 Tanga: <span id="balance">1000</span></span>
+      <span class="tanga">💰 Tanga: <span id="balance"></span></span>
     </div>
   </div>
 
@@ -70,16 +70,15 @@
         })
         .then(data => {
           document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+          document.getElementById('level').textContent = `Level: ${data.level}`;
           document.getElementById('xp').textContent = `XP: ${data.xp}`;
-          document.getElementById('level').textContent = `Daraja: ${data.level}`;
-          document.getElementById('rank').textContent = `🏅 Rank: ${data.rank}`;
-          document.getElementById('balance').textContent = data.coins ?? '1000'; // Agar coins mavjud bo‘lmasa 1000
-        })
+          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
+          document.getElementById('balance').textContent = `Tanga: ${data.coins}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+      })
         .catch(err => {
           console.error(err);
           document.getElementById('name').textContent = 'Xatolik!';
-          document.getElementById('balance').textContent = '1000'; // Xatolikda ham test qiymati
         });
     }
   </script>
