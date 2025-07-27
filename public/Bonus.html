@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Domino Bonus</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
 
     * {
       margin: 0;
@@ -13,31 +13,34 @@
       box-sizing: border-box;
     }
 
-     body {
+    body {
       min-height: 100vh;
-      font-family: 'Rajdhani', sans-serif;
-      background:  url('./bg2.jpg') no-repeat center center fixed;
-      background-size: cover;         /* Bu joy asosiy yechim */
-      background-position: center;   /* Markazda joylashadi */
-      background-repeat: no-repeat;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f 0%, #2a2a4a 100%);
+      background-size: cover;
       display: flex;
       flex-direction: column;
-      color : #fff;
+      color: #fff;
+      overflow-x: hidden;
     }
 
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(white 1px, transparent 1px),
-                  radial-gradient(white 1px, transparent 1px);
-      background-position: 0 0, 50px 50px;
-      background-size: 100px 100px;
-      animation: stars 100s linear infinite;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: stars 120s linear infinite;
+      opacity: 0.15;
       z-index: 0;
-      opacity: 0.2;
+    }
+
+    @keyframes stars {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-1000px); }
     }
 
     main {
@@ -45,105 +48,167 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-bottom: 100px;
+      padding: 20px;
       position: relative;
       z-index: 2;
     }
 
     .user-info {
       display: flex;
-      margin: 20px;
       justify-content: space-between;
-      flex-wrap: wrap;
-      color: #fff;
-      gap: 10px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #0ff;
       align-items: center;
+      flex-wrap: wrap;
+      margin: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      gap: 15px;
+      backdrop-filter: blur(8px);
       z-index: 2;
     }
 
     .user-profile {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
     .avatar {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      border: 2px solid #0ff;
+      border: 3px solid #00f0ff;
+      box-shadow: 0 0 10px #00f0ff;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.1);
     }
 
     .user-info h3 {
-      color: #0ff;
-      font-size: 24px;
+      color: #00f0ff;
+      font-size: 26px;
+      font-weight: 700;
+      text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
     }
 
     .user-info p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    .domino-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      max-width: 100%;
-      justify-content: center;
-      margin-bottom: 20px;
-      padding: 10px;
-      z-index: 2;
-    }
-
-    .domino {
-      width: 70px;
-      height: 70px;
-      background: #111;
-      border: 2px solid #0ff;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .domino img {
-      width: 30px;
-      height: 30px;
+      margin: 5px 0;
+      font-size: 16px;
+      opacity: 0.9;
+      color: #e0e0e0;
     }
 
     .bonus-title {
       text-align: center;
-      font-size: 22px;
-      margin-bottom: 15px;
-      color: #0ff;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 20px 0;
+      color: #00f0ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
       z-index: 2;
     }
 
-    .domino.available:hover {
-      background-color: #0ff;
+    .domino-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 15px;
+      max-width: 1200px;
+      width: 100%;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .domino {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #222, #333);
+      border: 2px solid #00f0ff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* CSS bilan tanga dizayni */
+    .coin {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle at 30%, #ffd700 0%, #f0c05a 50%, #d4a017 100%);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), inset 0 0 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .coin::before {
+      content: "$";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e1e2f;
+      text-shadow: 0 0 3px #fff;
+    }
+
+    .coin::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      opacity: 0.3;
+    }
+
+    .domino.available {
+      background: linear-gradient(145deg, #00f0ff, #0077ff);
       cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    .domino.available:hover .coin {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff; }
+      50% { box-shadow: 0 0 15px #00f0ff, 0 0 20px #00f0ff; }
+      100% { box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff; }
     }
 
     .domino.claimed {
-      background-color: rgba(165, 216, 165, 0.69);
-      color: #000;
+      background: linear-gradient(145deg, #28a745, #1e7e34);
+      color: #fff;
       font-weight: bold;
+      border-color: #28a745;
     }
 
     .domino.locked {
-      background-color: #333;
+      background: linear-gradient(145deg, #444, #555);
       color: #888;
+      border-color: #555;
       pointer-events: none;
     }
 
     .domino.missed {
-      background-color: #900;
+      background: linear-gradient(145deg, #dc3545, #a71d2a);
       color: #fff;
       font-weight: bold;
+      border-color: #dc3545;
     }
 
     footer.footer {
@@ -151,25 +216,70 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
       text-align: center;
       color: #fff;
-      font-size: 13px;
-      border-top: 1px solid #0ff;
+      font-size: 14px;
+      font-weight: 500;
+      border-top: 2px solid #00f0ff;
+      backdrop-filter: blur(10px);
       z-index: 3;
-      backdrop-filter: blur(5px);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
     }
 
     @media (max-width: 768px) {
       .user-info h3 {
+        font-size: 22px;
+      }
+
+      .domino {
+        width: 70px;
+        height: 70px;
         font-size: 20px;
+      }
+
+      .coin {
+        width: 35px;
+        height: 35px;
+      }
+
+      .coin::before {
+        font-size: 18px;
+      }
+
+      .bonus-title {
+        font-size: 24px;
       }
     }
 
     @media (max-width: 480px) {
+      .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       .user-info h3 {
         font-size: 18px;
+      }
+
+      .domino {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+      }
+
+      .coin {
+        width: 30px;
+        height: 30px;
+      }
+
+      .coin::before {
+        font-size: 16px;
+      }
+
+      .bonus-title {
+        font-size: 20px;
       }
     }
   </style>
@@ -207,7 +317,7 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const userId = tg.initDataUnsafe?.user?.id; // keyinchalik: tg.initDataUnsafe?.user?.id
+    const userId = tg.initDataUnsafe?.user?.id;
 
     if (!userId) {
       document.getElementById('name').textContent = 'Telegram ID topilmadi!';
@@ -261,9 +371,8 @@
           dom.textContent = '✔️';
         } else if (i === openIndex) {
           dom.classList.add('available');
-          const coin = document.createElement('img');
-          coin.src = './img/coin.png'; // Tangangiz uchun rasm
-          coin.alt = 'coin';
+          const coin = document.createElement('div');
+          coin.classList.add('coin');
           dom.appendChild(coin);
 
           dom.addEventListener('click', () => claimBonus(i));
