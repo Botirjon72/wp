@@ -452,111 +452,121 @@
       }
     }
 
-    async function spin() {
-      const btn = document.getElementById("spinBtn");
-      const resultDisplay = document.getElementById("result");
-      const betInput = document.getElementById("betAmount");
-      const bet = parseInt(betInput.value);
-      let balance = getUserBalance();
+  async function spin() {
+  const btn = document.getElementById("spinBtn");
+  const resultDisplay = document.getElementById("result");
+  const betInput = document.getElementById("betAmount");
+  const bet = parseInt(betInput.value);
+  let balance = getUserBalance();
 
-      resultDisplay.textContent = "";
+  resultDisplay.textContent = "";
 
-      if (isNaN(bet) || bet <= 0) {
-        showMessage("❗ Iltimos, stavka kiriting.");
-        return;
-      }
-      if (bet > balance) {
-        showMessage("❌ Balansda yetarli tanga yo‘q.");
-        return;
-      }
+  // ❌ Stavka noto‘g‘ri bo‘lsa
+  if (isNaN(bet) || bet <= 0) {
+    showMessage("❗ Iltimos, stavka kiriting.");
+    return;
+  }
 
-      // Balansdan stavkani ayrib tashlash
-      balance -= bet;
+  // ❌ Yetarli balans bo‘lmasa
+  if (bet > balance) {
+    showMessage("❌ Balansda yetarli tanga yo‘q.");
+    return;
+  }
+
+  // ✅ Stavkani balansdan ayirish (faqat frontend)
+  balance -= bet;
+  updateUserBalance(balance);
+
+  // ✅ Serverga -stavkani yuborish
+  try {
+    await updateBalanceOnServer(-bet);
+  } catch (err) {
+    showMessage("❌ Server bilan bog‘lanishda xato!");
+    updateUserBalance(balance + bet); // rollback
+    return;
+  }
+
+  // 🔊 Spin sound
+  spinSound.currentTime = 0;
+  spinSound.play();
+
+  // Buttonni vaqtincha o‘chirib turish
+  btn.disabled = true;
+
+  // ✅ G‘alaba ehtimoli (50%)
+  const isWin = Math.random() < 0.5;
+  let final1, final2, final3;
+
+  if (isWin) {
+    const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+    final1 = final2 = final3 = fruit;
+  } else {
+    do {
+      final1 = fruits[Math.floor(Math.random() * fruits.length)];
+      final2 = fruits[Math.floor(Math.random() * fruits.length)];
+      final3 = fruits[Math.floor(Math.random() * fruits.length)];
+    } while (final1 === final2 && final2 === final3);
+  }
+
+  // Reel elementlari
+  const inner1 = document.getElementById('r1');
+  const inner2 = document.getElementById('r2');
+  const inner3 = document.getElementById('r3');
+
+  // Reelga random mevalarni joylash
+  appendSymbols(inner1, 35, final1);
+  appendSymbols(inner2, 35, final2);
+  appendSymbols(inner3, 35, final3);
+
+  const symbolHeight = document.querySelector('.symbol').offsetHeight || 160;
+  const t1 = 4000 + Math.random() * 1000;
+  const t2 = 4000 + Math.random() * 1000;
+  const t3 = 4000 + Math.random() * 1000;
+  const offset = -34 * symbolHeight;
+
+  // Harakatni boshlash
+  setTimeout(() => {
+    inner1.style.transition = `top ${t1 / 1000}s ease-in-out`;
+    inner2.style.transition = `top ${t2 / 1000}s ease-in-out`;
+    inner3.style.transition = `top ${t3 / 1000}s ease-in-out`;
+
+    inner1.style.top = offset + 'px';
+    inner2.style.top = offset + 'px';
+    inner3.style.top = offset + 'px';
+  }, 50);
+
+  // Yutish yoki yutqazishni aniqlash
+  setTimeout(async () => {
+    if (final1 === final2 && final2 === final3) {
+      const multiplier = multipliers[final1] || 2;
+      const win = bet * multiplier;
+      balance += win;
       updateUserBalance(balance);
 
-      // Balansni serverda yangilash
+      // 🔊 Win sound
+      winSound.currentTime = 0;
+      winSound.play();
+
       try {
-        await updateBalanceOnServer(balance);
+        await updateBalanceOnServer(win); // ✅ faqat yutuqni yuboramiz
+        showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
       } catch (err) {
         showMessage("❌ Server bilan bog‘lanishda xato!");
-        updateUserBalance(balance + bet); // Xato bo‘lsa, stavkani qaytarish
-        return;
+        updateUserBalance(balance - win); // rollback
       }
+    } else {
+      // 🔊 Lose sound
+      loseSound.currentTime = 0;
+      loseSound.play();
 
-      spinSound.currentTime = 0;
-      spinSound.play();
-
-      btn.disabled = true;
-
-      const isWin = Math.random() < 0.5;
-      let final1, final2, final3;
-
-      if (isWin) {
-        const fruit = fruits[Math.floor(Math.random() * fruits.length)];
-        final1 = final2 = final3 = fruit;
-      } else {
-        do {
-          final1 = fruits[Math.floor(Math.random() * fruits.length)];
-          final2 = fruits[Math.floor(Math.random() * fruits.length)];
-          final3 = fruits[Math.floor(Math.random() * fruits.length)];
-        } while (final1 === final2 && final2 === final3);
-      }
-
-      const inner1 = document.getElementById('r1');
-      const inner2 = document.getElementById('r2');
-      const inner3 = document.getElementById('r3');
-
-      appendSymbols(inner1, 35, final1);
-      appendSymbols(inner2, 35, final2);
-      appendSymbols(inner3, 35, final3);
-
-      const symbolHeight = document.querySelector('.symbol').offsetHeight || 160;
-      const t1 = 4000 + Math.random() * 1000;
-      const t2 = 4000 + Math.random() * 1000;
-      const t3 = 4000 + Math.random() * 1000;
-      const offset = -34 * symbolHeight;
-
-      setTimeout(() => {
-        inner1.style.transition = `top ${t1 / 1000}s ease-in-out`;
-        inner2.style.transition = `top ${t2 / 1000}s ease-in-out`;
-        inner3.style.transition = `top ${t3 / 1000}s ease-in-out`;
-
-        inner1.style.top = offset + 'px';
-        inner2.style.top = offset + 'px';
-        inner3.style.top = offset + 'px';
-      }, 50);
-
-      setTimeout(async () => {
-        if (final1 === final2 && final2 === final3) {
-          const multiplier = multipliers[final1] || 2;
-          const win = bet * multiplier;
-          balance += win;
-          updateUserBalance(balance);
-
-          // Yutish ovozini ijro etish
-          winSound.currentTime = 0;
-          winSound.play();
-
-          // Balansni serverda yangilash
-          try {
-            await updateBalanceOnServer(balance);
-            showMessage(`🎉 G‘ALABA! ${final1} ×${multiplier} = +${win} tanga`, 'success');
-          } catch (err) {
-            showMessage("❌ Server bilan bog‘lanishda xato!");
-            updateUserBalance(balance - win); // Xato bo‘lsa, yutuqni qaytarish
-          }
-        } else {
-          // Yutqazish ovozini ijro etish
-          loseSound.currentTime = 0;
-          loseSound.play();
-
-          showMessage(`😢 Yutqazdingiz. -${bet} tanga. Omad keyingisida!`, 'error');
-        }
-        btn.disabled = false;
-      }, Math.max(t1, t2, t3) + 200);
+      showMessage(`😢 Yutqazdingiz. -${bet} tanga. Omad keyingisida!`, 'error');
     }
 
-    window.onload = () => {
+    btn.disabled = false;
+  }, Math.max(t1, t2, t3) + 200);
+}
+
+window.onload = () => {
       appendSymbols(document.getElementById("r1"), 3, '7️⃣');
       appendSymbols(document.getElementById("r2"), 3, '7️⃣');
       appendSymbols(document.getElementById("r3"), 3, '7️⃣');
