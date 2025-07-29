@@ -249,19 +249,10 @@
       <p id="coins">Tanga: --</p>
     </div>
   </div>
-
-  <main>
+<main>
     <div class="dashboard">
-      <div class="menu-grid">
-        <a href="Game.html" class="menu-item blue"><img src="./icons/game.png" alt="">Game</a>
-        <a href="Bonus.html" class="menu-item red"><img src="./icons/bonus.jpg" alt="">Bonus</a>
-        <a href="Tast.html" class="menu-item blue"><img src="./icons/Tack.jpg" alt="">TASK</a>
-        <a href="sozlama.html" class="menu-item blue"><img src="./icons/sozlamalar.jpg" alt="">Settings</a>
-        <a href="nft.html" class="menu-item red disabled"><img src="./icons/Rank.jpg" alt="">NFT</a>
-        <a href="#" class="menu-item red disabled"><img src="./icons/klan.jpg" alt="">Klan</a>
-        <a href="#" class="menu-item blue disabled"><img src="./icons/premium.jpg" alt="">Premium</a>
-        <a href="#" class="menu-item blue disabled"><img src="./icons/Token.jpg" alt="">COMING</a>
-        <a href="#" class="menu-item blue disabled"><img src="./icons/statistika.jpg" alt="">Statistika</a>
+      <div class="menu-grid" id="menu-grid">
+        <!-- Menyular JavaScript orqali dinamik ravishda qo‘shiladi -->
       </div>
     </div>
   </main>
@@ -270,38 +261,98 @@
     REKLAMA
   </footer>
 
-  <!-- FETCH USER DATA FROM API -->
+  <div id="notification" class="notification"></div>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
- <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-  const userId = tg.initDataUnsafe?.user?.id; // keyinchalik tg.initDataUnsafe?.user?.id bo'ladi
+    const userId = tg.initDataUnsafe?.user?.id;
+    const ADMIN_IDS = ['7935500609']; // Admin chat ID lar ro‘yxati (o‘zgartiring)
 
-  if (!userId) {
-    document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-    document.getElementById('avatar').src = './img/default.jpg';
-  } else {
-    fetch(`/api/user?telegram_id=${userId}`) // fetch(`/api/user?telegram_id=${userId}`) keyinchalik
-      .then(res => {
-        if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-        document.getElementById('level').textContent = `Level: ${data.level}`;
-        document.getElementById('xp').textContent = `XP: ${data.xp}`;
-        document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
-        document.getElementById('coins').textContent = `Tanga: ${data.coins}`;
-        document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('name').textContent = 'Xatolik!';
-      });
-  }
-</script>
+    // Bildirishnoma ko‘rsatish funksiyasi
+    function showNotification(message, type = 'error') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.background = type === 'success'
+        ? '#22c55e'
+        : 'linear-gradient(135deg, #ff4444, #ff6666)';
+      notification.style.display = 'block';
+      setTimeout(() => notification.classList.add('show'), 100);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        notification.style.display = 'none';
+      }, 3000);
+    }
 
+    // Menyularni dinamik ravishda qo‘shish
+    function renderMenu(isAdmin) {
+      const menuGrid = document.getElementById('menu-grid');
+      const userMenuItems = [
+        { href: 'Game.html', text: 'Game', class: 'blue', icon: './icons/game.png' },
+        { href: 'Bonus.html', text: 'Bonus', class: 'red', icon: './icons/bonus.jpg' },
+        { href: 'Tast.html', text: 'TASK', class: 'blue', icon: './icons/Tack.jpg' },
+        { href: 'sozlama.html', text: 'Settings', class: 'blue', icon: './icons/sozlamalar.jpg' },
+        { href: '#', text: 'NFT', class: 'red disabled', icon: './icons/Rank.jpg' },
+        { href: '#', text: 'Klan', class: 'red disabled', icon: './icons/klan.jpg' },
+        { href: '#', text: 'Premium', class: 'blue disabled', icon: './icons/premium.jpg' },
+        { href: '#', text: 'COMING', class: 'blue disabled', icon: './icons/Token.jpg' },
+        { href: '#', text: 'Statistika', class: 'blue disabled', icon: './icons/statistika.jpg' }
+      ];
+
+      const adminMenuItems = [
+        { href: 'admin-panel.html', text: 'Admin Panel', class: 'admin', icon: './icons/admin-panel.png' },
+        { href: 'manage-users.html', text: 'Foydalanuvchilarni Boshqarish', class: 'admin', icon: './icons/users.png' },
+        { href: 'statistics.html', text: 'Statistika', class: 'admin', icon: './icons/statistika.jpg' },
+        { href: 'Game.html', text: 'Game', class: 'blue', icon: './icons/game.png' },
+        { href: 'Bonus.html', text: 'Bonus', class: 'red', icon: './icons/bonus.jpg' },
+        { href: 'Tast.html', text: 'TASK', class: 'blue', icon: './icons/Tack.jpg' },
+        { href: 'sozlama.html', text: 'Settings', class: 'blue', icon: './icons/sozlamalar.jpg' }
+      ];
+
+      const menuItems = isAdmin ? adminMenuItems : userMenuItems;
+
+      menuGrid.innerHTML = menuItems.map(item => `
+        <a href="${item.href}" class="menu-item ${item.class}">
+          <img src="${item.icon}" alt="${item.text}">
+          ${item.text}
+        </a>
+      `).join('');
+    }
+
+    // Foydalanuvchi ma'lumotlarini yuklash
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+      showNotification('❌ Telegram ID topilmadi!');
+      renderMenu(false); // Oddiy foydalanuvchi menyusi
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level || 1}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank || 1} | Score: ${data.score || 0}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins?.toLocaleString() || 0}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+
+          // Admin ekanligini tekshirish
+          const isAdmin = ADMIN_IDS.includes(userId) || data.isAdmin; // Serverdan isAdmin kelishi mumkin
+          renderMenu(isAdmin);
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+          showNotification(`❌ Xatolik: ${err.message}`);
+          renderMenu(false); // Xato bo‘lsa oddiy menyular
+        });
+    }
+  </script>
 
 </body>
 </html>
