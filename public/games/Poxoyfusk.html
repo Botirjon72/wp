@@ -294,80 +294,86 @@
       currentWinDisplay.textContent = `Joriy yutuq: ${currentWin} tanga`;
     }
 
-    async function startGame() {
-      const val = parseInt(customBetInput.value);
-      if (isNaN(val) || val < 300) {
-        alert('Iltimos, 300 tangadan kam bo‘lmagan garov miqdorini kiriting!');
-        return;
-      }
+   async function startGame() {
+  if (isGameActive) {
+    showNotification('O‘yin allaqachon boshlangan!');
+    return;
+  }
+  startButton.disabled = true;
+  const val = parseInt(customBetInput.value);
+  if (isNaN(val) || val < 300) {
+    showNotification('Iltimos, 300 tangadan kam bo‘lmagan garov miqdorini kiriting!');
+    startButton.disabled = false;
+    return;
+  }
+  if (val > userBalance) {
+    showNotification('Mablag‘ yetmaydi!');
+    startButton.disabled = false;
+    return;
+  }
+  selectedBet = val;
 
-      if (val > userBalance) {
-        alert('Mablag‘ yetmaydi!');
-        return;
-      }
-
-      selectedBet = val;
-
-      try {
-        const res = await fetch('/api/update-balance', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegram_id: userId, amount: -selectedBet })
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
-        }
-        const data = await res.json();
-        if (typeof data.newScore !== 'number') {
-          throw new Error('Serverdan noto‘g‘ri javob keldi');
-        }
-        userBalance = data.newScore;
-        document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
-      } catch (err) {
-        console.error('StartGame xatosi:', err);
-        alert(`Garov tikishda xatolik: ${err.message}`);
-        return;
-      }
-
-      mineIndexes.clear();
-      while (mineIndexes.size < minesCount) {
-        mineIndexes.add(Math.floor(Math.random() * total));
-      }
-
-      isGameActive = true;
-      revealedCount = 0;
-      cashoutButton.disabled = false;
-      renderGrid(false, mineIndexes);
-      updateCurrentWin();
-
-      const crystals = document.querySelectorAll('.crystal');
-      crystals.forEach(div => {
-        div.addEventListener('click', () => {
-          if (!isGameActive || div.classList.contains('revealed')) return;
-
-          div.classList.add('revealed');
-          if (div.dataset.mine === 'true') {
-            div.classList.add('mine');
-            div.textContent = '💣';
-            isGameActive = false;
-            cashoutButton.disabled = true;
-            setTimeout(() => {
-              alert('💥 Siz mina bosdingiz. O\'yin tugadi.');
-              resetGame();
-            }, 300);
-          } else {
-            div.classList.add('yutuq');
-            div.textContent = '🪙';
-            revealedCount++;
-            const currentMultiplier = calculateMultiplier(revealedCount);
-            multiplierDisplay.textContent = `Ko‘paytiruvchi: ${currentMultiplier}x`;
-            updateCurrentWin();
-          }
-        });
-      });
+  try {
+    const res = await fetch('/api/update-balance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telegram_id: userId, amount: -selectedBet })
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
     }
+    const data = await res.json();
+    if (typeof data.newScore !== 'number') {
+      throw new Error('Serverdan noto‘g‘ri javob keldi');
+    }
+    userBalance = data.newScore;
+    document.getElementById('coins').textContent = `Tanga: ${userBalance}`;
+  } catch (err) {
+    console.error('StartGame xatosi:', err);
+    showNotification(`❌ Garov tikishda xatolik: ${err.message}`);
+    startButton.disabled = false;
+    return;
+  }
+
+  mineIndexes.clear();
+  const minesCount = 5; // Tuzatildi
+  while (mineIndexes.size < minesCount) {
+    mineIndexes.add(Math.floor(Math.random() * total));
+  }
+
+  isGameActive = true;
+  revealedCount = 0;
+  cashoutButton.disabled = false;
+  renderGrid(false, mineIndexes);
+  updateCurrentWin();
+
+  const crystals = document.querySelectorAll('.crystal');
+  crystals.forEach(div => {
+    div.addEventListener('click', () => {
+      if (!isGameActive || div.classList.contains('revealed')) return;
+      div.classList.add('revealed');
+      if (div.dataset.mine === 'true') {
+        div.classList.add('mine');
+        div.textContent = '💣';
+        isGameActive = false;
+        cashoutButton.disabled = true;
+        setTimeout(() => {
+          showNotification('💥 Siz mina bosdingiz. O\'yin tugadi.');
+          resetGame();
+        }, 300);
+      } else {
+        div.classList.add('yutuq');
+        div.textContent = '🪙';
+        revealedCount++;
+        const currentMultiplier = calculateMultiplier(revealedCount);
+        multiplierDisplay.textContent = `Ko‘paytiruvchi: ${currentMultiplier}x`;
+        updateCurrentWin();
+      }
+    });
+  });
+  startButton.disabled = false;
+}
 
     async function garovniOlish() {
       if (!isGameActive) return;
