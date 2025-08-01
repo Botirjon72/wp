@@ -510,7 +510,7 @@
     let betAmount = 0;
 
     async function updateBalanceInBackend(amount) {
-      if (!userId) return;
+      if (!userId) return false;
       try {
         const res = await fetch('/api/update-balance', {
           method: 'POST',
@@ -527,10 +527,12 @@
         }
         coins = data.newScore;
         coinsDisplay.textContent = `Tanga: ${coins.toFixed(2)}`;
+        return true;
       } catch (err) {
         console.error('Balans yangilash xatosi:', err);
         alert(`Balans yangilanmadi: ${err.message}`);
         coinsDisplay.textContent = `Tanga: ${coins.toFixed(2)}`;
+        return false;
       }
     }
 
@@ -672,8 +674,19 @@
       }
       gameStarted = true;
       startButton.style.display = 'none';
+      // Tikishni balansdan ayirish
       coins -= betAmount;
-      await updateBalanceInBackend(coins);
+      const balanceUpdated = await updateBalanceInBackend(coins);
+      if (!balanceUpdated) {
+        // Backend xatosi bo'lsa, o'yinni to'xtatish
+        message.textContent = "Balans yangilashda xato yuz berdi!";
+        coins += betAmount; // Tikishni qaytarish
+        gameStarted = false;
+        startButton.style.display = 'block';
+        updateBetControls();
+        updateCoinsDisplay();
+        return;
+      }
       resetCups();
       positions = [0, 1, 2];
       updateCupPositions();
@@ -711,7 +724,7 @@
         if (clickedCupIndex === realBallCupIndex) {
           const multiplier = 2.4;
           const winnings = Math.floor(betAmount * multiplier);
-          coins += winnings;
+          coins += winnings; // Yutuqni qo'shish
           message.textContent = `✅ To‘g‘ri topdingiz! Ko‘paytiruvchi: ${multiplier}x. Mukofot: ${winnings} tanga`;
           correctSound.play();
           disableClick();
@@ -722,7 +735,7 @@
           document.body.classList.add('shake');
           setTimeout(() => document.body.classList.remove('shake'), 500);
           disableClick();
-          await updateBalanceInBackend(coins);
+          await updateBalanceInBackend(coins); // Balans allaqachon ayirilgan, shunchaki tasdiqlash
         }
 
         setTimeout(() => {
@@ -730,7 +743,7 @@
           message.textContent = "Yana o‘ynash uchun Start tugmasini bosing!";
           gameStarted = false;
           updateBetControls();
-          if (coins === 0) {
+          if (coins <= 0) {
             message.textContent = "Tangalar tugadi! O‘yin tugadi.";
             startButton.disabled = true;
             minBetButton.disabled = true;
