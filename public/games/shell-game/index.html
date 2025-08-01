@@ -322,18 +322,10 @@
         gap: 8px;
       }
 
-      .avatar {
-        width: clamp(28px, 7vw, 35px);
-        height: clamp(28px, 7vw, 35px);
-      }
+      
 
-      .user-info h3 {
-        font-size: clamp(14px, 4vw, 16px);
-      }
 
-      .user-info p {
-        font-size: clamp(9px, 2.5vw, 11px);
-      }
+    
 
       .game-container {
         width: clamp(220px, 80vw, 300px);
@@ -362,21 +354,10 @@
     }
 
     @media (max-width: 480px) {
-      .user-info {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px);
-      }
+    
 
-      .user-profile {
-        flex-direction: row;
-        align-items: center;
-      }
+      
 
-      .avatar {
-        width: clamp(25px, 6vw, 30px);
-        height: clamp(25px, 6vw, 30px);
-      }
 
       .game-container {
         width: clamp(180px, 75vw, 240px);
@@ -440,20 +421,21 @@
   </style>
 </head>
 <body>
-  <div class="user-info">
+    <div class="user-info">
     <div class="user-profile">
       <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
       <div>
         <h3 id="name">Yuklanmoqda...</h3>
-        <p id="level">--</p>
+        <p id="level">--</p> <!-- Qo‘shildi -->
         <p id="xp">--</p>
       </div>
     </div>
     <div>
       <p id="rank">--</p>
-      <p id="coins">Tanga: 1000</p>
+      <p id="coins">Tanga: --</p>
     </div>
   </div>
+
 
   <main>
     <h1>🥎 Stakan O‘yini</h1>

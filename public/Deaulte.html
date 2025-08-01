@@ -168,7 +168,44 @@
   </footer>
 
   <!-- FETCH USER DATA FROM API -->
+  <script>
+   const tg = window.Telegram.WebApp;
+    tg.expand();
 
+
+    const userId = tg.initDataUnsafe?.user?.id;
+    const ADMIN_IDS = ['7935500609']; // Admin chat ID lar ro‘yxati (o‘zgartiring)
+
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+      showNotification('❌ Telegram ID topilmadi!');
+      renderMenu(false); 
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level || 1}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank || 1} | Score: ${data.score || 0}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins?.toLocaleString() || 0}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+
+          const isAdmin = ADMIN_IDS.includes(userId) || data.isAdmin; 
+          renderMenu(isAdmin);
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+          showNotification(`❌ Xatolik: ${err.message}`);
+          renderMenu(false); 
+        });
+    }
+    </script>
 
 </body>
 </html>

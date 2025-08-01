@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel | Cyberpunk Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to { transform: translateY(1000px); }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .admin-panel {
+      width: 100%;
+      max-width: 800px;
+      padding: 30px;
+      background: transparent;
+      border: 1px solid #0ff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      min-height: 500px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #0ff;
+      margin-bottom: 20px;
+    }
+
+    .admin-header h2 {
+      color: #0ff;
+      font-size: 28px;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
+
+    .admin-header .back-btn {
+      padding: 8px 16px;
+      background: #0ff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: 0.3s;
+    }
+
+    .admin-header .back-btn:hover {
+      background: #00ccff;
+      box-shadow: 0 0 15px #00ccff;
+    }
+
+    .admin-menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+    }
+
+    .admin-item {
+      width: 100%;
+      padding: 20px;
+      border: 2px solid #00ccff;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+      text-decoration: none;
+      transition: 0.3s;
+      box-shadow: 0 0 10px #00ccff66, 0 0 20px #00ccff33;
+    }
+
+    .admin-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00ccff, 0 0 25px #00ccff88;
+    }
+
+    .admin-item.red {
+      border-color: #ff0055;
+      color: #ff0055;
+      box-shadow: 0 0 10px #ff005566, 0 0 20px #ff005533;
+    }
+
+    .admin-item.red:hover {
+      box-shadow: 0 0 15px #ff0055, 0 0 25px #ff005588;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      color: #fff;
+      border-radius: 8px;
+      z-index: 1000;
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      display: block;
+    }
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 13px;
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .admin-panel {
+        padding: 15px;
+      }
+
+      .admin-menu {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-item {
+        font-size: 16px;
+      }
+
+      .admin-header h2 {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-item {
+        font-size: 14px;
+        padding: 15px;
+      }
+
+      .admin-header h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="admin-panel">
+      <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <a href="index.html" class="back-btn">Orqaga</a>
+      </div>
+      <div class="admin-menu">
+        <a href="manage-users.html" class="admin-item">Foydalanuvchilarni Boshqarish</a>
+        <a href="statistics.html" class="admin-item red">Statistika</a>
+        <a href="manage-bonuses.html" class="admin-item">Bonuslarni Boshqarish</a>
+        <a href="manage-tasks.html" class="admin-item red">Vazifalarni Boshqarish</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    REKLAMA
+  </footer>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const userId = tg.initDataUnsafe?.user?.id;
+    const ADMIN_IDS = ['7935500609'];
+
+    if (!userId) {
+      showNotification('❌ Telegram ID topilmadi!');
+      setTimeout(() => window.location.href = 'index.html', 2000);
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi yoki admin emas");
+          return res.json();
+        })
+        .then(data => {
+          if (!ADMIN_IDS.includes(String(userId)) && !data.isAdmin) {
+            showNotification('❌ Sizda admin huquqlari yo‘q!');
+            setTimeout(() => window.location.href = 'index.html', 2000);
+          }
+        })
+        .catch(err => {
+          console.error('API xatoligi:', err);
+          showNotification(`❌ Xatolik: ${err.message}`);
+          setTimeout(() => window.location.href = 'index.html', 2000);
+        });
+    }
+
+    function showNotification(message, type = 'error') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.background = type === 'success'
+        ? '#22c55e'
+        : 'linear-gradient(135deg, #ff4444, #ff6666)';
+      notification.style.display = 'block';
+      setTimeout(() => notification.classList.add('show'), 100);
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
