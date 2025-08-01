@@ -268,9 +268,39 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+
     const userId = tg.initDataUnsafe?.user?.id;
     const ADMIN_IDS = ['7935500609']; // Admin chat ID lar ro‘yxati (o‘zgartiring)
 
+    if (!userId) {
+      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
+      document.getElementById('avatar').src = './img/default.jpg';
+      showNotification('❌ Telegram ID topilmadi!');
+      renderMenu(false); 
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level || 1}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank || 1} | Score: ${data.score || 0}`;
+          document.getElementById('coins').textContent = `Tanga: ${data.coins?.toLocaleString() || 0}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+
+          const isAdmin = ADMIN_IDS.includes(userId) || data.isAdmin; 
+          renderMenu(isAdmin);
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+          showNotification(`❌ Xatolik: ${err.message}`);
+          renderMenu(false); 
+        });
+    }
     // Bildirishnoma ko‘rsatish funksiyasi
     function showNotification(message, type = 'error') {
       const notification = document.getElementById('notification');
@@ -302,8 +332,8 @@
       ];
 
       const adminMenuItems = [
-        { href: 'admin-panel.html', text: 'Admin Panel', class: 'admin', icon: './icons/admin-panel.png' },
-        { href: 'manage-users.html', text: 'Foydalanuvchilarni Boshqarish', class: 'admin', icon: './icons/users.png' },
+        { href: 'admin-panel.html', text: 'Admin Panel', class: 'admin', icon: './icons/game.png' },
+        { href: 'manage-users.html', text: 'Foydalanuvchilarni Boshqarish', class: 'admin', icon: './icons/game.png' },
         { href: 'statistics.html', text: 'Statistika', class: 'admin', icon: './icons/statistika.jpg' },
         { href: 'Game.html', text: 'Game', class: 'blue', icon: './icons/game.png' },
         { href: 'Bonus.html', text: 'Bonus', class: 'red', icon: './icons/bonus.jpg' },
@@ -321,37 +351,7 @@
       `).join('');
     }
 
-    // Foydalanuvchi ma'lumotlarini yuklash
-    if (!userId) {
-      document.getElementById('name').textContent = 'Telegram ID topilmadi!';
-      document.getElementById('avatar').src = './img/default.jpg';
-      showNotification('❌ Telegram ID topilmadi!');
-      renderMenu(false); // Oddiy foydalanuvchi menyusi
-    } else {
-      fetch(`/api/user?telegram_id=${userId}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-          document.getElementById('level').textContent = `Level: ${data.level || 1}`;
-          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
-          document.getElementById('rank').textContent = `Rank: ${data.rank || 1} | Score: ${data.score || 0}`;
-          document.getElementById('coins').textContent = `Tanga: ${data.coins?.toLocaleString() || 0}`;
-          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-
-          // Admin ekanligini tekshirish
-          const isAdmin = ADMIN_IDS.includes(userId) || data.isAdmin; // Serverdan isAdmin kelishi mumkin
-          renderMenu(isAdmin);
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById('name').textContent = 'Xatolik!';
-          showNotification(`❌ Xatolik: ${err.message}`);
-          renderMenu(false); // Xato bo‘lsa oddiy menyular
-        });
-    }
+    
   </script>
 
 </body>
