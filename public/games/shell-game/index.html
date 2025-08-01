@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stakan O‘yini</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Rajdhani', sans-serif;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: all 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+
+    body.shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-10px); }
+      80% { transform: translateX(10px); }
+      100% { transform: translateX(0); }
+    }
+
+    .user-info {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      color: #fff;
+      gap: 10px;
+      padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 20px);
+      border-bottom: 1px solid #0ff;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 4;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: clamp(30px, 8vw, 40px);
+      height: clamp(30px, 8vw, 40px);
+      border-radius: 50%;
+      border: 2px solid #0ff;
+      object-fit: cover;
+    }
+
+    .user-info h3 {
+      color: #0ff;
+      font-size: clamp(16px, 4vw, 20px);
+    }
+
+    .user-info p {
+      margin: 5px 0 0;
+      font-size: clamp(10px, 3vw, 14px);
+      opacity: 0.8;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(60px, 15vw, 80px) 20px clamp(80px, 20vw, 100px);
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    h1 {
+      color: #e0e1dd;
+      font-size: clamp(1.8em, 6vw, 2.8em);
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.7), 0 0 40px rgba(65, 90, 119, 0.5);
+      animation: glow 2s ease-in-out infinite alternate;
+      text-align: center;
+    }
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(65, 90, 119, 0.3); }
+      100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(65, 90, 119, 0.6); }
+    }
+
+    #startButton {
+      padding: clamp(10px, 3vw, 14px) clamp(25px, 6vw, 35px);
+      font-size: clamp(1em, 4vw, 1.4em);
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(45deg, #ff006e, #ff4d6d);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 20px rgba(255, 77, 109, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    #startButton:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 0 40px rgba(255, 77, 109, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff4d6d, #ff006e);
+    }
+
+    #startButton:disabled {
+      background: linear-gradient(45deg, #555, #777);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .bet-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .bet-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .bet-button {
+      padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px);
+      font-size: clamp(0.9em, 3vw, 1.1em);
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(45deg, #00ccff, #00ff99);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+    }
+
+    .bet-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px rgba(0, 255, 153, 0.9);
+      background: linear-gradient(45deg, #00ff99, #00ccff);
+    }
+
+    .bet-button:disabled {
+      background: linear-gradient(45deg, #555, #777);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #betInput {
+      padding: clamp(6px, 2vw, 8px);
+      width: clamp(80px, 20vw, 100px);
+      font-size: clamp(0.9em, 3vw, 1.1em);
+      border: 1px solid #0ff;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    #betInput:focus {
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .game-container {
+      position: relative;
+      width: clamp(260px, 85vw, 380px);
+      height: clamp(160px, 50vw, 200px);
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .cup {
+      width: clamp(70px, 22vw, 90px);
+      height: clamp(100px, 30vw, 120px);
+      position: absolute;
+      bottom: clamp(30px, 10vw, 40px);
+      transition: left 0.7s ease, transform 0.5s ease;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .cup-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      transition: transform 0.3s ease;
+      transform: rotate(180deg);
+    }
+
+    .cup.covered .cup-img {
+      transform: rotate(180deg) translateY(clamp(-15px, -4vw, -20px));
+    }
+
+    .cup.lift {
+      transform: translateY(clamp(-25px, -8vw, -30px));
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
+    }
+
+    .ball {
+      width: clamp(20px, 6vw, 25px);
+      height: clamp(20px, 6vw, 25px);
+      background: radial-gradient(circle at 30% 30%, #00ff99, #00ccff);
+      border-radius: 50%;
+      position: absolute;
+      bottom: 1px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      animation: bounce 0.8s infinite alternate ease-in-out;
+      box-shadow: 0 0 20px rgba(0, 255, 153, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .cup:not(.covered) .ball {
+      display: block;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(clamp(-8px, -2.5vw, -10px)); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+
+    #message {
+      font-size: clamp(1em, 3.5vw, 1.3em);
+      font-weight: 600;
+      color: #e0e1dd;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 15px);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    #message:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+    }
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: clamp(8px, 2.5vw, 12px);
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: clamp(9px, 2.5vw, 11px);
+      border-top: 1px solid #0ff;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .user-info {
+        padding: clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 15px);
+        gap: 8px;
+      }
+
+      .avatar {
+        width: clamp(28px, 7vw, 35px);
+        height: clamp(28px, 7vw, 35px);
+      }
+
+      .user-info h3 {
+        font-size: clamp(14px, 4vw, 16px);
+      }
+
+      .user-info p {
+        font-size: clamp(9px, 2.5vw, 11px);
+      }
+
+      .game-container {
+        width: clamp(220px, 80vw, 300px);
+        height: clamp(140px, 45vw, 180px);
+      }
+
+      .cup {
+        width: clamp(55px, 20vw, 70px);
+        height: clamp(80px, 25vw, 100px);
+        bottom: clamp(25px, 8vw, 35px);
+      }
+
+      .bet-buttons {
+        gap: 6px;
+      }
+
+      .bet-button {
+        padding: clamp(5px, 1.5vw, 7px) clamp(10px, 2.5vw, 12px);
+        font-size: clamp(0.8em, 2.5vw, 0.9em);
+      }
+
+      #betInput {
+        width: clamp(70px, 18vw, 90px);
+        font-size: clamp(0.8em, 2.5vw, 0.9em);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px);
+      }
+
+      .user-profile {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .avatar {
+        width: clamp(25px, 6vw, 30px);
+        height: clamp(25px, 6vw, 30px);
+      }
+
+      .game-container {
+        width: clamp(180px, 75vw, 240px);
+        height: clamp(120px, 40vw, 160px);
+      }
+
+      .cup {
+        width: clamp(45px, 18vw, 60px);
+        height: clamp(70px, 22vw, 90px);
+        bottom: clamp(20px, 6vw, 30px);
+      }
+
+      #startButton {
+        padding: clamp(8px, 2.5vw, 10px) clamp(15px, 4vw, 20px);
+        font-size: clamp(0.9em, 3vw, 1em);
+      }
+
+      #message {
+        font-size: clamp(0.9em, 3vw, 1em);
+        padding: clamp(5px, 1.5vw, 6px) clamp(8px, 2vw, 10px);
+      }
+
+      .bet-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      main {
+        padding: 100px 20px 120px;
+      }
+
+      .game-container {
+        width: 400px;
+        height: 220px;
+      }
+
+      .cup {
+        width: 100px;
+        height: 140px;
+        bottom: 50px;
+      }
+
+      #startButton {
+        padding: 16px 40px;
+        font-size: 1.6em;
+      }
+
+      .bet-button {
+        padding: 10px 20px;
+        font-size: 1.2em;
+      }
+
+      #betInput {
+        width: 120px;
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="user-info">
+    <div class="user-profile">
+      <img id="avatar" src="./img/default.jpg" alt="Avatar" class="avatar">
+      <div>
+        <h3 id="name">Yuklanmoqda...</h3>
+        <p id="level">--</p>
+        <p id="xp">--</p>
+      </div>
+    </div>
+    <div>
+      <p id="rank">--</p>
+      <p id="coins">Tanga: --</p>
+    </div>
+  </div>
+
+  <main>
+    <h1>🥎 Stakan O‘yini</h1>
+    <button id="startButton">Start</button>
+
+    <div class="game-container">
+      <div class="cup" id="cup1"><img class="cup-img" src="picture/cup.png" alt="cup"></div>
+      <div class="cup" id="cup2"><img class="cup-img" src="picture/cup.png" alt="cup"></div>
+      <div class="cup" id="cup3"><img class="cup-img" src="picture/cup.png" alt="cup"></div>
+    </div>
+
+    <p id="message">O‘yin boshlanishi uchun Start tugmasini bosing</p>
+    <div class="bet-controls">
+      <input type="number" id="betInput" placeholder="Miqdor" min="1" max="1000">
+      <div class="bet-buttons">
+        <button class="bet-button" id="minBet">Min (300)</button>
+        <button class="bet-button" id="maxBet">Max (1000)</button>
+        <button class="bet-button" id="doubleBet">2x</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    REKLAMA
+  </footer>
+
+  <audio id="correctSound" src="correct-voice/correct.mp3"></audio>
+  <audio id="incorrectSound" src="incorrect-voice/incorrect.mp3"></audio>
+  <audio id="shuffleSound" src="fast-whoosh-118248.mp3"></audio>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const userId = tg.initDataUnsafe?.user?.id;
+
+    const cups = [document.getElementById('cup1'), document.getElementById('cup2'), document.getElementById('cup3')];
+    const message = document.getElementById('message');
+    const startButton = document.getElementById('startButton');
+    const coinsDisplay = document.getElementById('coins');
+    const minBetButton = document.getElementById('minBet');
+    const maxBetButton = document.getElementById('maxBet');
+    const doubleBetButton = document.getElementById('doubleBet');
+    const betInput = document.getElementById('betInput');
+    const correctSound = document.getElementById('correctSound');
+    const incorrectSound = document.getElementById('incorrectSound');
+    const shuffleSound = document.getElementById('shuffleSound');
+
+    let realBallCupIndex = 0;
+    let positions = [0, 1, 2];
+    let leftPositions = [20, 160, 300];
+    let gameStarted = false;
+    let coins = 0;
+    let betAmount = 0;
+
+    async function updateBalanceInBackend(amount) {
+      if (!userId) return;
+      try {
+        const res = await fetch('/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount })
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
+        }
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') {
+          throw new Error('Serverdan noto‘g‘ri javob keldi');
+        }
+        coins = data.newScore;
+        coinsDisplay.textContent = `Tanga: ${coins.toFixed(2)}`;
+      } catch (err) {
+        console.error('Balans yangilash xatosi:', err);
+        alert(`Balans yangilanmadi: ${err.message}`);
+        coinsDisplay.textContent = `Tanga: ${coins.toFixed(2)}`;
+      }
+    }
+
+    function updateCoinsDisplay() {
+      coinsDisplay.textContent = `Tanga: ${coins.toFixed(2)}`;
+    }
+
+    function updateCupPositions() {
+      const containerWidth = document.querySelector('.game-container').offsetWidth;
+      const cupWidth = document.querySelector('.cup').offsetWidth;
+      const gap = (containerWidth - 3 * cupWidth) / 4;
+      leftPositions = [
+        gap,
+        gap * 2 + cupWidth,
+        gap * 3 + cupWidth * 2
+      ];
+
+      positions.forEach((cupIndex, visualIndex) => {
+        cups[cupIndex].style.left = `${leftPositions[visualIndex]}px`;
+      });
+    }
+
+    function placeBall() {
+      document.querySelectorAll('.ball').forEach(b => b.remove());
+      const ball = document.createElement('div');
+      ball.classList.add('ball');
+      cups[realBallCupIndex].appendChild(ball);
+    }
+
+    function revealBall() {
+      document.querySelectorAll('.ball').forEach(b => b.style.display = 'block');
+    }
+
+    function coverCups() {
+      cups.forEach(cup => cup.classList.add('covered'));
+    }
+
+    function uncoverCups() {
+      cups.forEach(cup => cup.classList.remove('covered'));
+    }
+
+    function disableClick() {
+      cups.forEach(cup => cup.style.pointerEvents = 'none');
+    }
+
+    function enableClick() {
+      cups.forEach(cup => cup.style.pointerEvents = 'auto');
+    }
+
+    function resetCups() {
+      cups.forEach(cup => cup.classList.remove('covered', 'lift'));
+    }
+
+    function updateBetControls() {
+      const inputValue = parseInt(betInput.value) || 0;
+      startButton.disabled = inputValue <= 0 || inputValue > coins || inputValue > 1000;
+      minBetButton.disabled = coins < 300 || gameStarted;
+      maxBetButton.disabled = coins < 1000 || gameStarted;
+      doubleBetButton.disabled = (inputValue * 2 > coins || inputValue * 2 > 1000 || inputValue === 0) || gameStarted;
+      betInput.disabled = gameStarted;
+    }
+
+    function setBet(amount) {
+      betAmount = Math.min(amount, coins, 1000);
+      betInput.value = betAmount;
+      updateBetControls();
+    }
+
+    minBetButton.addEventListener('click', () => {
+      setBet(300);
+    });
+
+    maxBetButton.addEventListener('click', () => {
+      setBet(1000);
+    });
+
+    doubleBetButton.addEventListener('click', () => {
+      const currentBet = parseInt(betInput.value) || 0;
+      if (currentBet > 0) {
+        setBet(currentBet * 2);
+      }
+    });
+
+    betInput.addEventListener('input', () => {
+      let value = parseInt(betInput.value) || 0;
+      if (value < 1) {
+        betInput.value = '';
+      } else if (value > 1000) {
+        betInput.value = 1000;
+      }
+      updateBetControls();
+    });
+
+    function shuffleCups() {
+      message.textContent = "Stakanlar aralashtirilmoqda...";
+      disableClick();
+      coverCups();
+
+      let count = 24, step = 0;
+
+      function swapStep() {
+        if (step >= count) {
+          setTimeout(() => {
+            message.textContent = "Qaysi stakanda to‘p bor?";
+            enableClick();
+          }, 170);
+          return;
+        }
+
+        let i = Math.floor(Math.random() * 3), j;
+        do { j = Math.floor(Math.random() * 3); } while (i === j);
+
+        cups[positions[i]].classList.add('lift');
+        cups[positions[j]].classList.add('lift');
+
+        shuffleSound.currentTime = 0;
+        shuffleSound.play();
+
+        setTimeout(() => {
+          [positions[i], positions[j]] = [positions[j], positions[i]];
+          if (realBallCupIndex === positions[i]) realBallCupIndex = positions[j];
+          else if (realBallCupIndex === positions[j]) realBallCupIndex = positions[i];
+
+          updateCupPositions();
+          cups.forEach(c => c.classList.remove('lift'));
+          step++;
+          setTimeout(swapStep, 170);
+        }, 170);
+      }
+
+      swapStep();
+    }
+
+    async function startGame() {
+      betAmount = parseInt(betInput.value) || 0;
+      if (betAmount <= 0 || betAmount > coins || betAmount > 1000) {
+        message.textContent = "Iltimos, to‘g‘ri miqdor kiriting!";
+        return;
+      }
+      gameStarted = true;
+      startButton.style.display = 'none';
+      coins -= betAmount;
+      await updateBalanceInBackend(coins);
+      resetCups();
+      positions = [0, 1, 2];
+      updateCupPositions();
+      realBallCupIndex = Math.floor(Math.random() * 3);
+      placeBall();
+      uncoverCups();
+      
+      disableClick();
+      message.textContent = "To‘pni ko‘ring!";
+      updateBetControls();
+      setTimeout(() => {
+        message.textContent = "Stakanlar tushmoqda...";
+        coverCups();
+        setTimeout(shuffleCups, 1000);
+      }, 3000);
+    }
+
+    cups.forEach((cup, visualIndex) => {
+      cup.addEventListener('click', async () => {
+        if (!gameStarted) return;
+        gameStarted = false;
+        uncoverCups();
+        revealBall();
+
+        cups[visualIndex].classList.add('lift');
+        setTimeout(() => {
+          cups.forEach((c, idx) => {
+            if (idx !== visualIndex) {
+              c.classList.add('lift');
+            }
+          });
+        }, 1000);
+
+        const clickedCupIndex = positions[visualIndex];
+        if (clickedCupIndex === realBallCupIndex) {
+          const multiplier = 2.4;
+          const winnings = Math.floor(betAmount * multiplier);
+          coins += winnings;
+          message.textContent = `✅ To‘g‘ri topdingiz! Ko‘paytiruvchi: ${multiplier}x. Mukofot: ${winnings} tanga`;
+          correctSound.play();
+          disableClick();
+          await updateBalanceInBackend(coins);
+        } else {
+          message.textContent = `❌ Afsus, noto‘g‘ri. -${betAmount} tanga`;
+          incorrectSound.play();
+          document.body.classList.add('shake');
+          setTimeout(() => document.body.classList.remove('shake'), 500);
+          disableClick();
+          await updateBalanceInBackend(coins);
+        }
+
+        setTimeout(() => {
+          startButton.style.display = 'block';
+          message.textContent = "Yana o‘ynash uchun Start tugmasini bosing!";
+          gameStarted = false;
+          updateBetControls();
+          if (coins === 0) {
+            message.textContent = "Tangalar tugadi! O‘yin tugadi.";
+            startButton.disabled = true;
+            minBetButton.disabled = true;
+            maxBetButton.disabled = true;
+            doubleBetButton.disabled = true;
+            betInput.disabled = true;
+          }
+        }, 2500);
+      });
+    });
+
+    startButton.addEventListener('click', startGame);
+    window.addEventListener('resize', updateCupPositions);
+    updateCupPositions();
+
+    if (!userId) {
+      document.getElementById('name').textContent = 'Nomaʼlum';
+      document.getElementById('level').textContent = 'Level: 0';
+      document.getElementById('xp').textContent = 'XP: 0';
+      document.getElementById('rank').textContent = 'Rank: 0 | Score: 0';
+      document.getElementById('coins').textContent = 'Tanga: 0';
+      coins = 0;
+      updateBetControls();
+    } else {
+      fetch(`/api/user?telegram_id=${userId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('name').textContent = data.name || 'Nomaʼlum';
+          document.getElementById('level').textContent = `Level: ${data.level || 0}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+          document.getElementById('rank').textContent = `Rank: ${data.rank || 0} | Score: ${data.score || 0}`;
+          coins = parseFloat(data.coins ?? '0');
+          document.getElementById('coins').textContent = `Tanga: ${coins.toFixed(2)}`;
+          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
+          updateBetControls();
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('name').textContent = 'Xatolik!';
+          document.getElementById('coins').textContent = 'Tanga: 0';
+          coins = 0;
+          updateBetControls();
+        });
+    }
+  </script>
+</body>
+</html>
