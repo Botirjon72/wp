@@ -4,8 +4,365 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rainbet - Plinko O'yini</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: #000;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding-top: 70px;
+      padding-bottom: 100px;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+                  radial-gradient(white 1px, transparent 1px);
+      background-position: 0 0, 50px 50px;
+      background-size: 100px 100px;
+      animation: stars 100s linear infinite;
+      z-index: 0;
+      opacity: 0.07;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to   { transform: translateY(1000px); }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 15px;
+      font-size: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 18px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    .balance {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    #plinkoCanvas {
+      display: block;
+      background: rgba(0, 0, 0, 0.15);
+      margin: 0 auto;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+      max-width: 90%;
+    }
+
+    .rewards {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 10px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slot {
+      width: 40px;
+      height: 35px;
+      background: linear-gradient(to bottom, #444, #333);
+      color: #fff;
+      font-weight: bold;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border: 1px solid #555;
+    }
+
+    .slot.active {
+      background: linear-gradient(to bottom, #00ff00, #00cc00);
+      transform: scale(1.25);
+      box-shadow: 0 0 20px #00ff00;
+      z-index: 20;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .controls {
+      margin-top: 20px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls input[type="number"] {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #0ff;
+      background: #111;
+      color: #0ff;
+      width: 150px;
+      text-align: center;
+    }
+
+    .controls .btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .controls button {
+      padding: 8px 20px;
+      font-size: 14px;
+      background: #184fe8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 0 8px #184fe8;
+      transition: 0.3s ease;
+    }
+
+    .controls button:hover {
+      background: #2864ff;
+      box-shadow: 0 0 12px #2864ff;
+    }
+
+    #dropBall {
+      background: linear-gradient(to right, #00c9ff, #92fe9d);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0, 201, 255, 0.3);
+    }
+
+    #dropBall:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 201, 255, 0.4);
+    }
+
+    #dropBall:active {
+      transform: translateY(1px);
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+      color: #fff;
+      font-size: 12px;
+      border-top: 1px solid #0ff;
+      z-index: 10;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (min-width: 360px) and (max-width: 365px) and (min-height: 775px) and (max-height: 780px) {
+      .header {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .logo {
+        font-size: 16px;
+      }
+
+      .balance {
+        font-size: 14px;
+      }
+
+      #plinkoCanvas {
+        max-width: 85%;
+        margin-top: 5px;
+      }
+
+      .rewards {
+        margin-top: -5px;
+        gap: 3px;
+        padding: 5px;
+      }
+
+      .slot {
+        width: 35px;
+        height: 30px;
+        font-size: 10px;
+      }
+
+      .controls {
+        margin-top: 10px;
+        gap: 5px;
+      }
+
+      .controls input[type="number"] {
+        width: 120px;
+        padding: 5px;
+        font-size: 12px;
+      }
+
+      .controls button {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+
+      .footer {
+        padding: 5px;
+        font-size: 10px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        padding: 10px 15px;
+        font-size: 16px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+
+      .slot {
+        width: 40px;
+        height: 35px;
+        font-size: 12px;
+      }
+
+      .controls input[type="number"] {
+        width: 150px;
+        font-size: 14px;
+      }
+
+      .controls button {
+        padding: 8px 20px;
+        font-size: 14px;
+      }
+
+      #plinkoCanvas {
+        max-width: 80%;
+        height: auto;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+      }
+
+      .btns {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 15px;
+      }
+
+      .btns button {
+        flex: 1;
+        font-size: 12px;
+        padding: 8px 10px;
+        border: none;
+        border-radius: 6px;
+        background: linear-gradient(to right, #00c9ff, #92fe9d);
+        color: #000;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0, 201, 255, 0.3);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        max-width: 80px;
+      }
+
+      .btns button:active {
+        transform: scale(0.96);
+      }
+    }
+
+    .user-info {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 10px 20px;
+      border-bottom: 1px solid #0ff;
+      background-color: #111;
+      color: #fff;
+      z-index: 1000;
+      gap: 15px;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #0ff;
+    }
+
+    .user-details span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .rank,
+    .tanga {
+      font-size: 12px;
+      font-weight: bold;
+      color: #0ff;
+    }
+  </style>
 </head>
 <body>
   <div class="user-info">
@@ -19,7 +376,7 @@
     </div>
     <div class="right">
       <span class="rank" id="rank">🏅 Rank: --</span>
-      <span class="tanga">💰 Tanga: <span id="balance"></span></span>
+      <span class="tanga">💰 Tanga: <span id="balance">--</span></span>
     </div>
   </div>
 
@@ -45,13 +402,305 @@
   </footer>
 
   <!-- SCRIPT -->
-  <script src="script.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
+    const canvas = document.getElementById('plinkoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const bounceSound = new Audio('ping-82822.mp3');
+    const winSound = new Audio('success-340660.mp3');
+    const loseSound = new Audio('spin-fail-295088.mp3');
+    bounceSound.volume = 0.3;
+    winSound.volume = 0.5;
+    loseSound.volume = 0.5;
+
+    function playBounceSound() {
+      const s = bounceSound.cloneNode();
+      s.volume = 0.3;
+      s.play();
+    }
+
+    function playWinSound() {
+      const s = winSound.cloneNode();
+      s.volume = 0.5;
+      s.play();
+    }
+
+    function playLoseSound() {
+      const s = loseSound.cloneNode();
+      s.volume = 0.5;
+      s.play();
+    }
+
+    let isMobile, pegRadius, ballRadius, pegSpacing;
+    const pegs = [];
+    const balls = [];
+    const rewards = new Array(7).fill(null);
+    let balance = 0;
+    const MIN_BET = 300;
+    let currentBet = MIN_BET;
+    let slotElements = [];
+    const userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+
+    function setResponsiveParams() {
+      isMobile = window.innerWidth < 600;
+      pegRadius = isMobile ? 8 : 10;
+      ballRadius = isMobile ? 6 : 8;
+      pegSpacing = isMobile ? 45 : 80;
+    }
+
+    function resizeCanvas() {
+      canvas.width = Math.min(window.innerWidth, 1200);
+      canvas.height = window.innerHeight * 0.7;
+      setResponsiveParams();
+    }
+    resizeCanvas();
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createPegTriangle();
+    });
+
+    class Peg {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, pegRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#00ffff';
+        ctx.fill();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#00ffff';
+        ctx.closePath();
+      }
+    }
+
+    class Ball {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = Math.random() * 2 - 1;
+        this.vy = 2;
+        this.gravity = isMobile ? 0.10 : 0.45;
+        this.friction = 0.98;
+        this.bounce = isMobile ? 1.6 : 1.3;
+        this.scored = false;
+        this.lastBounceTime = 0;
+        this.hitPegs = new Set();
+      }
+
+      update() {
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= this.friction;
+
+        pegs.forEach((peg, index) => {
+          const dx = this.x - peg.x;
+          const dy = this.y - peg.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < pegRadius + ballRadius) {
+            const angle = Math.atan2(dy, dx);
+            const overlap = pegRadius + ballRadius - dist;
+
+            this.x += Math.cos(angle) * overlap;
+            this.y += Math.sin(angle) * overlap;
+
+            this.vx = Math.cos(angle) * this.bounce;
+            this.vy = Math.sin(angle) * this.bounce;
+
+            const now = Date.now();
+            if (now - this.lastBounceTime > 100) {
+              playBounceSound();
+              this.lastBounceTime = now;
+            }
+          }
+        });
+
+        if (this.x < ballRadius || this.x > canvas.width - ballRadius) {
+          this.vx *= -0.8;
+          this.x = Math.max(ballRadius, Math.min(canvas.width - ballRadius, this.x));
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, ballRadius, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, ballRadius);
+        gradient.addColorStop(0, '#ffff00');
+        gradient.addColorStop(1, '#ff9900');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'yellow';
+        ctx.closePath();
+      }
+    }
+
+    function createPegTriangle() {
+      pegs.length = 0;
+      rewards.fill(null);
+
+      const fullRows = 8;
+      const rows = (window.innerHeight < 600 || window.innerWidth < 350) ? fullRows - 1 : fullRows;
+      const startCols = 3;
+      const verticalOffset = isMobile ? 10 : 0;
+
+      for (let row = 0; row < rows; row++) {
+        const cols = startCols + row;
+        const y = row * pegSpacing + 50 + verticalOffset;
+        const totalRowWidth = (cols - 1) * pegSpacing;
+        const startX = canvas.width / 2 - totalRowWidth / 2;
+
+        for (let col = 0; col < cols; col++) {
+          const x = startX + col * pegSpacing;
+          pegs.push(new Peg(x, y));
+        }
+      }
+
+      const slotContainer = document.getElementById('slotContainer');
+      slotContainer.innerHTML = '';
+      for (let i = 0; i < rewards.length; i++) {
+        const div = document.createElement('div');
+        div.className = 'slot';
+        div.textContent = '';
+        slotContainer.appendChild(div);
+      }
+
+      slotElements = document.querySelectorAll('.slot');
+    }
+
+    function getRandomReward() {
+      const rand = Math.random();
+      if (rand < 0.3) return 1.2;      // 30%
+      if (rand < 0.55) return 1.6;     // 25%
+      if (rand < 0.9) return 2;        // 35%
+      if (rand < 0.93) return 4;       // 3%
+      if (rand < 0.97) return 6;       // 4%
+      if (rand < 0.985) return 9;      // 1.5%
+      if (rand < 0.996) return 27;     // 1.1%
+      if (rand < 0.999) return 100;    // 0.3%
+      return 1000;                     // 0.1%
+    }
+
+    function updateCoinsDisplay() {
+      document.getElementById('balance').textContent = balance.toFixed(2);
+    }
+
+    function updateBalanceInBackend(coins) {
+      if (!userId) return; // Agar userId bo'lmasa, backendga so'rov yuborilmaydi
+      fetch(`/api/update-balance?telegram_id=${userId}&coins=${coins}`, {
+        method: 'POST'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Tanga yangilashda xatolik");
+          return res.json();
+        })
+        .then(data => {
+          balance = parseFloat(data.coins ?? balance);
+          updateCoinsDisplay();
+        })
+        .catch(err => {
+          console.error(err);
+          updateCoinsDisplay();
+        });
+    }
+
+    function updateBalls() {
+      for (let i = balls.length - 1; i >= 0; i--) {
+        const ball = balls[i];
+        ball.update();
+
+        if (!ball.scored && ball.y >= canvas.height - 50) {
+          const slotWidth = canvas.width / rewards.length;
+          let index = Math.floor(ball.x / slotWidth);
+          index = Math.max(0, Math.min(rewards.length - 1, index));
+
+          const reward = getRandomReward();
+          rewards[index] = reward;
+
+          const winAmount = Math.round(currentBet * reward);
+          balance += winAmount;
+
+          reward > 1 ? playWinSound() : playLoseSound();
+
+          updateBalanceInBackend(balance);
+
+          const slot = slotElements[index];
+          if (slot) {
+            slot.textContent = reward + 'x';
+            slot.classList.add('active');
+            setTimeout(() => {
+              slot.classList.remove('active');
+              slot.textContent = '';
+            }, 1000);
+          }
+
+          ball.scored = true;
+          balls.splice(i, 1);
+        }
+
+        if (ball.y > canvas.height + 100) {
+          balls.splice(i, 1);
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      pegs.forEach(p => p.draw());
+      balls.forEach(b => b.draw());
+      updateBalls();
+      requestAnimationFrame(draw);
+    }
+
+    document.getElementById('dropBall').addEventListener('click', () => {
+      const betInput = document.getElementById('betAmount');
+      const enteredBet = parseInt(betInput?.value);
+
+      if (!isNaN(enteredBet)) {
+        currentBet = Math.max(MIN_BET, Math.min(balance, enteredBet));
+        betInput.value = currentBet;
+      } else {
+        currentBet = MIN_BET;
+        betInput.value = MIN_BET;
+      }
+
+      if (balance >= currentBet) {
+        if (balls.length < 10) {
+          balance -= currentBet;
+          updateBalanceInBackend(balance);
+          const offset = Math.random() * 80 - 40;
+          balls.push(new Ball(canvas.width / 2 + offset, 10));
+        } else {
+          alert('Juda ko‘p shar bor, kuting!');
+        }
+      } else {
+        alert('Balans yetarli emas!');
+      }
+    });
+
+    createPegTriangle();
+    draw();
+
     const tg = window.Telegram.WebApp;
     tg.expand();
-    const userId = tg.initDataUnsafe?.user?.id;
 
+    if (!userId) {
+      document.getElementById('name').textContent = 'Durbek!';
+      document.getElementById('avatar').src = './img/default.jpg';
+      document.getElementById('xp').textContent = 'XP: 0';
+      document.getElementById('level').textContent = 'Daraja: 1';
+      document.getElementById('rank').textContent = '🏅 Rank: Boshlovchi';
+      document.getElementById('balance').textContent = '0';
+      balance = 0;
+    } else {
       fetch(`/api/user?telegram_id=${userId}`)
         .then(res => {
           if (!res.ok) throw new Error("Foydalanuvchi topilmadi");
@@ -59,17 +708,19 @@
         })
         .then(data => {
           document.getElementById('name').textContent = data.name || 'Nomaʼlum';
-          document.getElementById('level').textContent = `Level: ${data.level}`;
-          document.getElementById('xp').textContent = `XP: ${data.xp}`;
-          document.getElementById('rank').textContent = `Rank: ${data.rank} | Score: ${data.score}`;
-          document.getElementById('balance').textContent = `Tanga: ${data.coins}`;
-          document.getElementById('avatar').src = data.avatar?.trim() ? data.avatar : './img/default.jpg';
-      })
+          document.getElementById('level').textContent = `Daraja: ${data.level || 1}`;
+          document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
+          document.getElementById('rank').textContent = `🏅 Rank: ${data.rank || 'Boshlovchi'} | Score: ${data.score || 0}`;
+          document.getElementById('balance').textContent = data.coins ?? '0';
+          balance = parseFloat(data.coins ?? '0');
+        })
         .catch(err => {
           console.error(err);
           document.getElementById('name').textContent = 'Xatolik!';
+          document.getElementById('balance').textContent = '0';
+          balance = 0;
         });
-    
+    }
   </script>
 </body>
 </html>
