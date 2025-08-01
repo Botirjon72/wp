@@ -587,30 +587,32 @@
       return 1000;                     // 0.1%
     }
 
-    function updateCoinsDisplay() {
-      document.getElementById('balance').textContent = balance.toFixed(2);
-    }
-
-    function updateBalanceInBackend(coins) {
-      if (!userId) return; // Agar userId bo'lmasa, backendga so'rov yuborilmaydi
-      fetch(`/api/update-balance?telegram_id=${userId}&coins=${coins}`, {
-        method: 'POST'
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Tanga yangilashda xatolik");
-          return res.json();
-        })
-        .then(data => {
-          balance = parseFloat(data.coins ?? balance);
-          updateCoinsDisplay();
-        })
-        .catch(err => {
-          console.error(err);
-          updateCoinsDisplay();
+    async function updateBalanceInBackend(amount) {
+      if (!userId) return;
+      try {
+        const res = await fetch('/api/update-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: userId, amount })
         });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP xato: ${res.status}, ${errorText}`);
+        }
+        const data = await res.json();
+        if (typeof data.newScore !== 'number') {
+          throw new Error('Serverdan noto‘g‘ri javob keldi');
+        }
+        balance = data.newScore;
+        document.getElementById('balance').textContent = balance.toFixed(2);
+      } catch (err) {
+        console.error('Balans yangilash xatosi:', err);
+        alert(`Balans yangilanmadi: ${err.message}`);
+        document.getElementById('balance').textContent = balance.toFixed(2);
+      }
     }
 
-    function updateBalls() {
+    async function updateBalls() {
       for (let i = balls.length - 1; i >= 0; i--) {
         const ball = balls[i];
         ball.update();
@@ -628,7 +630,7 @@
 
           reward > 1 ? playWinSound() : playLoseSound();
 
-          updateBalanceInBackend(balance);
+          await updateBalanceInBackend(balance);
 
           const slot = slotElements[index];
           if (slot) {
@@ -660,7 +662,7 @@
       requestAnimationFrame(draw);
     }
 
-    document.getElementById('dropBall').addEventListener('click', () => {
+    document.getElementById('dropBall').addEventListener('click', async () => {
       const betInput = document.getElementById('betAmount');
       const enteredBet = parseInt(betInput?.value);
 
@@ -675,7 +677,7 @@
       if (balance >= currentBet) {
         if (balls.length < 10) {
           balance -= currentBet;
-          updateBalanceInBackend(balance);
+          await updateBalanceInBackend(balance);
           const offset = Math.random() * 80 - 40;
           balls.push(new Ball(canvas.width / 2 + offset, 10));
         } else {
@@ -711,7 +713,7 @@
           document.getElementById('level').textContent = `Daraja: ${data.level || 1}`;
           document.getElementById('xp').textContent = `XP: ${data.xp || 0}`;
           document.getElementById('rank').textContent = `🏅 Rank: ${data.rank || 'Boshlovchi'} | Score: ${data.score || 0}`;
-          document.getElementById('balance').textContent = data.coins ?? '0';
+          document.getElementById('balance').textContent = (data.coins ?? '0').toFixed(2);
           balance = parseFloat(data.coins ?? '0');
         })
         .catch(err => {
