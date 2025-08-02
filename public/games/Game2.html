@@ -481,75 +481,62 @@
     });
 
     let rotation = 0;
-    function spinWheel() {
-      if (isSpinning) {
-        console.log("Ruletka allaqachon aylanmoqda!");
-        return;
-      }
+ function spinWheel() {
+  if (isSpinning) {
+    console.log("Ruletka allaqachon aylanmoqda!");
+    return;
+  }
 
-      const bet = parseInt(customBetInput.value);
-      console.log("Garov tikish boshlandi, bet:", bet);
+  const bet = parseInt(customBetInput.value);
+  if (!bet || bet < 300 || bet > 3000) {
+    resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
+    resultText.style.color = "orange";
+    return;
+  }
 
-      if (!bet || bet < 300 || bet > 3000) {
-        resultText.innerText = "⚠️ 300 dan kam yoki 3000 dan ko'p bo‘lmagan miqdor kiriting!";
-        resultText.style.color = "orange";
-        console.log("Xato: Noto'g'ri garov miqdori:", bet);
-        return;
-      }
+  if (bet > userCoins) {
+    return;
+  }
 
-      if (bet > userCoins) {
-        resultText.innerText = "❌ Tangalaringiz yetarli emas!";
-        resultText.style.color = "red";
-        console.log("Xato: Yetarli tanga yo'q, balans:", userCoins);
-        return;
-      }
+  isSpinning = true;
+  startButton.disabled = true;
+  dynamicPointer.style.display = "block";
+  dynamicPointer.innerText = "Aylanmoqda...";
 
-      isSpinning = true;
-      startButton.disabled = true;
+  updateBalance(-bet).then(() => {
+    const randomIndex = Math.floor(Math.random() * values.length);
+    const anglePerSlice = 360 / values.length;
+    const fullRotations = 8;
+    rotation += 360 * fullRotations + (360 - (randomIndex * anglePerSlice));
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    console.log("Ruletka aylandi, rotation:", rotation, "targetIndex:", randomIndex);
 
-      updateBalance(-bet).then(() => {
-        const randomIndex = Math.floor(Math.random() * values.length);
-        const anglePerSlice = 360 / values.length;
-        // Natijani tepaga (0 gradus) moslashtirish
-        const targetAngle = 360 * 5 + (360 - (randomIndex * anglePerSlice));
-        rotation = targetAngle; // Faqat kerakli burchakka aylantirish
-        wheel.style.transform = `rotate(${rotation}deg)`;
-        console.log("Ruletka aylandi, rotation:", rotation, "targetIndex:", randomIndex);
+    setTimeout(() => {
+      const selectedValue = values[randomIndex];
+      const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
+      const winAmount = Math.floor(multiplier * bet);
 
+      updateBalance(winAmount).then(() => {
+        resultText.style.color = "#00ff00";
+        dynamicPointer.innerText = `${selectedValue} (${winAmount} tanga)`;
         setTimeout(() => {
-          const selectedValue = values[randomIndex]; // To'g'ri indeksdan qiymat olish
-          const multiplier = parseFloat(selectedValue.replace("x", "").replace("K", "000"));
-          const winAmount = Math.floor(multiplier * bet);
-
-          updateBalance(winAmount).then(() => {
-            resultText.innerText = `🎉 Siz yutdingiz: ${selectedValue} → ${winAmount} tanga`;
-            resultText.style.color = "#00ff00";
-            dynamicPointer.style.display = "block";
-            dynamicPointer.innerText = `${selectedValue} (${winAmount} tanga)`;
-            dynamicPointer.style.transform = `translateX(-50%)`;
-            console.log("Yutuq hisoblandi:", { selectedValue, winAmount });
-
-            setTimeout(() => {
-              dynamicPointer.style.display = "none";
-            }, 5000);
-          }).catch(err => {
-            resultText.innerText = "❌ Yutuqni hisoblashda xato!";
-            resultText.style.color = "red";
-            console.error("Yutuqni hisoblashda xato:", err);
-          }).finally(() => {
-            isSpinning = false;
-            startButton.disabled = false;
-            console.log("Aylanish tugadi, isSpinning:", isSpinning);
-          });
-        }, 4000); // 4 soniya kechikish
+          dynamicPointer.style.display = "none";
+        }, 5000);
       }).catch(err => {
-        resultText.innerText = "❌ Garov tikishda xato!";
         resultText.style.color = "red";
-        console.error("Garov tikishda xato:", err);
+        console.error("Yutuqni hisoblashda xato:", err);
+      }).finally(() => {
         isSpinning = false;
         startButton.disabled = false;
       });
-    }
+    }, 3000);
+  }).catch(err => {
+    resultText.style.color = "red";
+    console.error("Garov tikishda xato:", err);
+    isSpinning = false;
+    startButton.disabled = false;
+  });
+}
 
     startButton.addEventListener('click', spinWheel);
 
